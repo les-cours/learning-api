@@ -1,0 +1,22 @@
+schema {
+  query: Query
+  mutation: Mutation
+}
+
+type Mutation {
+    deleteClassRoom(classRoomID: String!): OperationStatus
+
+}
+
+type Query {
+    classRoomsBySubject(subjectID: String!): [ClassRoom!]!
+    classRoom(classRoomID: String!): ClassRoom!
+}
+
+
+
+type OperationStatus {
+    succeeded: Boolean!
+}
+
+

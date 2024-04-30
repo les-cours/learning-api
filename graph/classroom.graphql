@@ -1,0 +1,16 @@
+type Lesson {
+  id: String!
+  title: String!
+  arabicTitle: String!
+}
+
+type ClassRoom {
+    classRoomID: String!
+    title: String!
+    image: String!
+    price: Int!
+    badge: String!
+    studentCount: Int!
+    Rating: Float!
+    lessons: [Lesson!]!
+}
