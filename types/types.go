@@ -1,25 +1,22 @@
 package types
 
 type Permissions struct {
-	Bots     bool `json:"bots"`
-	Triggers bool `json:"triggers"`
-	Tickets  bool `json:"tickets"`
-	Profiles bool `json:"profiles"`
-	Kbas     bool `json:"kbas"`
-	Settings bool `json:"settings"`
+	USER     bool `json:"user"`
+	LEARNING bool `json:"learning"`
+	ORGS     bool `json:"orgs"`
 }
 
 type UserToken struct {
-	Username      string      `json:"username"`
-	AccountID     string      `json:"accountID"`
-	Email         string      `json:"email"`
-	ID            string      `json:"id"`
-	CoBrowsing    bool        `json:"coBrowsing"`
-	ScreenShare   bool        `json:"screenShare"`
-	AudioDownload bool        `json:"audioDownload"`
-	VideoDownload bool        `json:"videoDownload"`
-	Create        Permissions `json:"create"`
-	Update        Permissions `json:"update"`
-	Read          Permissions `json:"read"`
-	Delete        Permissions `json:"delete"`
+	ID        string      `json:"id"`
+	UserType  string      `json:"userType"`
+	AccountID string      `json:"accountID"`
+	Username  string      `json:"username"`
+	FirstName string      `json:"firstname"`
+	LastName  string      `json:"lastname"`
+	Email     string      `json:"email"`
+	Avatar    string      `json:"avatar"`
+	Create    Permissions `json:"create"`
+	Update    Permissions `json:"update"`
+	Read      Permissions `json:"read"`
+	Delete    Permissions `json:"delete"`
 }

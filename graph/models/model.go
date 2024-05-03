@@ -2,21 +2,46 @@
 
 package models
 
+import (
+	"github.com/99designs/gqlgen/graphql"
+)
+
+type Chapter struct {
+	ChapterID   string `json:"chapterID"`
+	Title       string `json:"title"`
+	ArabicTitle string `json:"arabicTitle"`
+	Description string `json:"description"`
+}
+
 type ClassRoom struct {
-	ClassRoomID  string    `json:"classRoomID"`
-	Title        string    `json:"title"`
-	Image        string    `json:"image"`
-	Price        int       `json:"price"`
-	Badge        string    `json:"badge"`
-	StudentCount int       `json:"studentCount"`
-	Rating       float64   `json:"Rating"`
-	Lessons      []*Lesson `json:"lessons"`
+	ClassRoomID  string  `json:"classRoomID"`
+	Title        string  `json:"title"`
+	Image        string  `json:"image"`
+	Price        int     `json:"price"`
+	Badge        string  `json:"badge"`
+	StudentCount int     `json:"studentCount"`
+	Rating       float64 `json:"Rating"`
+}
+
+type CreateChapterInput struct {
+	ClassRoomID string `json:"classRoomID"`
+	Title       string `json:"title"`
+	ArabicTitle string `json:"arabicTitle"`
+	Description string `json:"description"`
+}
+
+type CreateLessonInput struct {
+	ChapterID   string `json:"chapterID"`
+	Title       string `json:"title"`
+	ArabicTitle string `json:"arabicTitle"`
+	Description string `json:"description"`
 }
 
 type Lesson struct {
-	ID          string `json:"id"`
+	LessonID    string `json:"lessonID"`
 	Title       string `json:"title"`
 	ArabicTitle string `json:"arabicTitle"`
+	Description string `json:"description"`
 }
 
 type Mutation struct {
@@ -27,4 +52,9 @@ type OperationStatus struct {
 }
 
 type Query struct {
+}
+
+type UploadVideoInput struct {
+	LessonID string         `json:"lessonID"`
+	Content  graphql.Upload `json:"content"`
 }

@@ -3,11 +3,6 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"log"
-	"net/http"
-	"runtime"
-	"strconv"
-
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	learningApi "github.com/les-cours/learning-api/api/learning"
@@ -16,6 +11,9 @@ import (
 	"github.com/les-cours/learning-api/graph/resolvers"
 	"github.com/les-cours/learning-api/types"
 	"google.golang.org/grpc"
+	"log"
+	"net/http"
+	"runtime"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -42,15 +40,13 @@ func monitoringMiddleware(originalHandler http.Handler) http.HandlerFunc {
 func getUser(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user := types.UserToken{}
+
+		log.Printf("acccountId %s %s %s", r.Header.Get("Accountid"), r.Header.Get("Id"), r.Header.Get("Email"))
+
 		accountID := r.Header.Get("Accountid")
 		id := r.Header.Get("Id")
 		email := r.Header.Get("Email")
-		username := r.Header.Get("Username")
 
-		coBrowsing, _ := strconv.ParseBool(r.Header.Get("Cobrowsing"))
-		screenShare, _ := strconv.ParseBool(r.Header.Get("Screenshare"))
-		audioDownload, _ := strconv.ParseBool(r.Header.Get("Audiodownload"))
-		videoDownload, _ := strconv.ParseBool(r.Header.Get("Videodownload"))
 		json.Unmarshal([]byte(r.Header.Get("Create")), &user.Create)
 		json.Unmarshal([]byte(r.Header.Get("Read")), &user.Read)
 		json.Unmarshal([]byte(r.Header.Get("Update")), &user.Update)
@@ -58,11 +54,7 @@ func getUser(h http.Handler) http.Handler {
 		user.AccountID = accountID
 		user.ID = id
 		user.Email = email
-		user.Username = username
-		user.CoBrowsing = coBrowsing
-		user.ScreenShare = screenShare
-		user.AudioDownload = audioDownload
-		user.VideoDownload = videoDownload
+
 		ctx := context.WithValue(r.Context(), "responseWriter", w)
 		ctx = context.WithValue(ctx, "user", &user)
 		h.ServeHTTP(w, r.WithContext(ctx))
@@ -91,9 +83,9 @@ func Start() {
 		log.Fatalf("Failed to connect to agent domain service: %v", err)
 	}
 	defer conn.Close()
-	learningServiceClient := learningApi.NewLearningServiceClient(conn)
-	log.Println(conn)
-	r := resolvers.Resolver{LearningClient: learningServiceClient}
+	learningClient := learningApi.NewLearningServiceClient(conn)
+
+	r := resolvers.Resolver{LearningClient: learningClient}
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &r}))
 
 	http.Handle("/api", cors(getUser(srv)))

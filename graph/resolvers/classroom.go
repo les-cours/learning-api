@@ -12,7 +12,7 @@ func (r *queryResolver) ClassRoomsBySubject(ctx context.Context, subjectID strin
 
 	var ClassRooms []*models.ClassRoom
 
-	res, err := r.LearningClient.GetClassRoomsBySubject(ctx, &learning.GetByUUIDRequest{
+	res, err := r.LearningClient.GetClassRoomsBySubject(ctx, &learning.IDRequest{
 		Id: subjectID,
 	})
 	if err != nil {
@@ -28,7 +28,7 @@ func (r *queryResolver) ClassRoomsBySubject(ctx context.Context, subjectID strin
 func (r *queryResolver) ClassRoom(ctx context.Context, ClassRoomID string) (*models.ClassRoom, error) {
 
 	log.Println("ClassRoom ... ")
-	ClassRoom, err := r.LearningClient.GetClassRoom(ctx, &learning.GetByUUIDRequest{
+	ClassRoom, err := r.LearningClient.GetClassRoom(ctx, &learning.IDRequest{
 		Id: ClassRoomID,
 	})
 	if err != nil {
@@ -42,7 +42,7 @@ func (r *queryResolver) ClassRoom(ctx context.Context, ClassRoomID string) (*mod
 func (r *mutationResolver) DeleteClassRoom(ctx context.Context, classRoomID string) (*models.OperationStatus, error) {
 
 	//ctx.Value()
-	_, err := r.LearningClient.DeleteClassRoom(ctx, &learning.GetByUUIDRequest{
+	_, err := r.LearningClient.DeleteClassRoom(ctx, &learning.IDRequest{
 		Id: classRoomID,
 	})
 	if err != nil {

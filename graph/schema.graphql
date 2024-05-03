@@ -1,11 +1,15 @@
+scalar Upload
+
 schema {
   query: Query
   mutation: Mutation
 }
 
 type Mutation {
+    createChapter(in:CreateChapterInput!):Chapter!
+    createLesson(in:CreateLessonInput!):Lesson!
     deleteClassRoom(classRoomID: String!): OperationStatus
-
+    uploadVideo(input: UploadVideoInput!): OperationStatus
 }
 
 type Query {
@@ -19,4 +23,9 @@ type OperationStatus {
     succeeded: Boolean!
 }
 
+
+input UploadVideoInput {
+    lessonID: String!
+    content: Upload!
+}
 

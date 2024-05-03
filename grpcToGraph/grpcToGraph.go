@@ -14,14 +14,22 @@ func ClassRoom(classRoom *learning.ClassRoom) *models.ClassRoom {
 		Badge:        classRoom.Badge,
 		StudentCount: int(classRoom.StudentCount),
 		Rating:       float64(classRoom.Rating),
-		Lessons:      Lessons(classRoom.Lessons),
 	}
 
 }
 
+func Chapter(chapter *learning.Chapter) *models.Chapter {
+	return &models.Chapter{
+		ChapterID:   chapter.ChapterID,
+		Title:       chapter.Title,
+		ArabicTitle: chapter.ArabicTitle,
+		Description: chapter.Description,
+	}
+}
+
 func Lesson(lesson *learning.Lesson) *models.Lesson {
 	return &models.Lesson{
-		ID:          lesson.LessonID,
+		LessonID:    lesson.LessonID,
 		Title:       lesson.Title,
 		ArabicTitle: lesson.ArabicTitle,
 	}
