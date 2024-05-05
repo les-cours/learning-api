@@ -37,6 +37,21 @@ type CreateLessonInput struct {
 	Description string `json:"description"`
 }
 
+type Document struct {
+	DocumentID    string `json:"documentID"`
+	DocumentType  string `json:"documentType"`
+	Title         string `json:"title"`
+	ArabicTitle   string `json:"arabicTitle"`
+	Description   string `json:"description"`
+	Duration      int    `json:"duration"`
+	LectureNumber int    `json:"lectureNumber"`
+	DocumentLink  string `json:"documentLink"`
+}
+
+type IDRequest struct {
+	ID string `json:"id"`
+}
+
 type Lesson struct {
 	LessonID    string `json:"lessonID"`
 	Title       string `json:"title"`
@@ -52,6 +67,26 @@ type OperationStatus struct {
 }
 
 type Query struct {
+}
+
+type StudentLesson struct {
+	Lesson    *Lesson `json:"lesson"`
+	CanAccess bool    `json:"canAccess"`
+}
+
+type UpdateChapterInput struct {
+	ChapterID   string `json:"chapterID"`
+	Title       string `json:"title"`
+	ArabicTitle string `json:"arabicTitle"`
+	Description string `json:"description"`
+}
+
+type UpdateLessonInput struct {
+	LessonID    string `json:"lessonID"`
+	ChapterID   string `json:"chapterID"`
+	Title       string `json:"title"`
+	ArabicTitle string `json:"arabicTitle"`
+	Description string `json:"description"`
 }
 
 type UploadVideoInput struct {

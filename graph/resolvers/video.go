@@ -10,10 +10,16 @@ import (
 func (r *mutationResolver) UploadVideo(ctx context.Context, in models.UploadVideoInput) (*models.OperationStatus, error) {
 
 	fileContent, _ := ioutil.ReadAll(in.Content.File)
-	_, err := r.LearningClient.UploadVideo(ctx, &learning.UploadVideoRequest{
-		LessonID: in.LessonID,
-		Content:  fileContent,
-		Filename: in.Content.Filename,
+	_, err := r.LearningClient.CreateVideo(ctx, &learning.CreateVideoRequest{
+		LessonID:      in.LessonID,
+		Title:         "test",
+		ArabicTitle:   "test",
+		Description:   "test",
+		LectureNumber: 0,
+		Video: &learning.UploadVideoRequest{
+			Content:  fileContent,
+			Filename: in.Content.Filename,
+		},
 	})
 	if err != nil {
 		return nil, ErrApi(err)

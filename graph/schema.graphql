@@ -7,17 +7,40 @@ schema {
 
 type Mutation {
     createChapter(in:CreateChapterInput!):Chapter!
+    updateChapter(in:UpdateChapterInput!):Chapter!
+    deleteChapter(in:IdRequest!):OperationStatus!
+
     createLesson(in:CreateLessonInput!):Lesson!
-    deleteClassRoom(classRoomID: String!): OperationStatus
+    updateLesson(in:UpdateLessonInput!):Lesson!
+    deleteLesson(in:IdRequest!):OperationStatus!
+
+
+    deleteClassRoom(in: IdRequest!): OperationStatus
     uploadVideo(input: UploadVideoInput!): OperationStatus
+
+
 }
 
 type Query {
-    classRoomsBySubject(subjectID: String!): [ClassRoom!]!
+    classRooms(subjectID: String!): [ClassRoom!]!
     classRoom(classRoomID: String!): ClassRoom!
+
+    chapters(classRoomID: String!): [Chapter!]!
+
+    lessons(chapterID: String!): [Lesson!]!
+
+    documents(lessonID: String!): [Document!]!
+
+
+# students
+    myLessons(chapterID: String!): [StudentLesson!]!
+    myClassRooms(subjectID: String!): [ClassRoom!]!
 }
 
 
+input IdRequest{
+    id: String!
+}
 
 type OperationStatus {
     succeeded: Boolean!
