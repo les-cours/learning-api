@@ -6,17 +6,19 @@ import (
 	"github.com/les-cours/learning-api/graph/models"
 	gprcToGraph "github.com/les-cours/learning-api/grpcToGraph"
 	"github.com/les-cours/learning-api/permisions"
+	"log"
 )
 
 func (r *mutationResolver) CreateChapter(ctx context.Context, in models.CreateChapterInput) (*models.Chapter, error) {
 
-	_, err := permisions.CanCreate(ctx)
+	user, err := permisions.CanCreate(ctx)
+	log.Println(err)
 	if err != nil {
 		return nil, ErrApi(err)
 	}
 
 	chapter, err := r.LearningClient.CreateChapter(ctx, &learning.CreateChapterRequest{
-		//	UserID:      user.AccountID,
+		UserID:      user.AccountID,
 		ClassRoomID: in.ClassRoomID,
 		Title:       in.Title,
 		ArabicTitle: in.ArabicTitle,

@@ -24,7 +24,7 @@ type Mutation {
 type Query {
     classRooms(subjectID: String!): [ClassRoom!]!
     classRoom(classRoomID: String!): ClassRoom!
-
+    classRoomsTeacher(teacherID: String!):[ClassRoom!]!
     chapters(classRoomID: String!): [Chapter!]!
 
     lessons(chapterID: String!): [Lesson!]!

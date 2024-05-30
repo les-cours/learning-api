@@ -48,38 +48,55 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Chapter struct {
-		ArabicTitle func(childComplexity int) int
-		ChapterID   func(childComplexity int) int
-		Description func(childComplexity int) int
-		Title       func(childComplexity int) int
+		ArabicDescription func(childComplexity int) int
+		ArabicTitle       func(childComplexity int) int
+		ChapterID         func(childComplexity int) int
+		Description       func(childComplexity int) int
+		Lessons           func(childComplexity int) int
+		Title             func(childComplexity int) int
 	}
 
 	ClassRoom struct {
-		Badge        func(childComplexity int) int
-		ClassRoomID  func(childComplexity int) int
-		Image        func(childComplexity int) int
-		Price        func(childComplexity int) int
-		Rating       func(childComplexity int) int
-		StudentCount func(childComplexity int) int
-		Title        func(childComplexity int) int
+		ArabicDescription func(childComplexity int) int
+		ArabicTitle       func(childComplexity int) int
+		Badge             func(childComplexity int) int
+		Chapters          func(childComplexity int) int
+		ClassRoomID       func(childComplexity int) int
+		Description       func(childComplexity int) int
+		Image             func(childComplexity int) int
+		Price             func(childComplexity int) int
+		Rating            func(childComplexity int) int
+		StudentCount      func(childComplexity int) int
+		Teacher           func(childComplexity int) int
+		Title             func(childComplexity int) int
 	}
 
 	Document struct {
-		ArabicTitle   func(childComplexity int) int
-		Description   func(childComplexity int) int
-		DocumentID    func(childComplexity int) int
-		DocumentLink  func(childComplexity int) int
-		DocumentType  func(childComplexity int) int
-		Duration      func(childComplexity int) int
-		LectureNumber func(childComplexity int) int
-		Title         func(childComplexity int) int
+		ArabicDescription func(childComplexity int) int
+		ArabicTitle       func(childComplexity int) int
+		Description       func(childComplexity int) int
+		DocumentID        func(childComplexity int) int
+		DocumentLink      func(childComplexity int) int
+		DocumentType      func(childComplexity int) int
+		Duration          func(childComplexity int) int
+		LectureNumber     func(childComplexity int) int
+		Title             func(childComplexity int) int
+	}
+
+	Duration struct {
+		Hours       func(childComplexity int) int
+		Minutes     func(childComplexity int) int
+		Nanoseconds func(childComplexity int) int
+		Seconds     func(childComplexity int) int
 	}
 
 	Lesson struct {
-		ArabicTitle func(childComplexity int) int
-		Description func(childComplexity int) int
-		LessonID    func(childComplexity int) int
-		Title       func(childComplexity int) int
+		ArabicDescription func(childComplexity int) int
+		ArabicTitle       func(childComplexity int) int
+		Description       func(childComplexity int) int
+		Documents         func(childComplexity int) int
+		LessonID          func(childComplexity int) int
+		Title             func(childComplexity int) int
 	}
 
 	Mutation struct {
@@ -98,18 +115,25 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Chapters     func(childComplexity int, classRoomID string) int
-		ClassRoom    func(childComplexity int, classRoomID string) int
-		ClassRooms   func(childComplexity int, subjectID string) int
-		Documents    func(childComplexity int, lessonID string) int
-		Lessons      func(childComplexity int, chapterID string) int
-		MyClassRooms func(childComplexity int, subjectID string) int
-		MyLessons    func(childComplexity int, chapterID string) int
+		Chapters          func(childComplexity int, classRoomID string) int
+		ClassRoom         func(childComplexity int, classRoomID string) int
+		ClassRooms        func(childComplexity int, subjectID string) int
+		ClassRoomsTeacher func(childComplexity int, teacherID string) int
+		Documents         func(childComplexity int, lessonID string) int
+		Lessons           func(childComplexity int, chapterID string) int
+		MyClassRooms      func(childComplexity int, subjectID string) int
+		MyLessons         func(childComplexity int, chapterID string) int
 	}
 
 	StudentLesson struct {
 		CanAccess func(childComplexity int) int
 		Lesson    func(childComplexity int) int
+	}
+
+	Teacher struct {
+		Firstname func(childComplexity int) int
+		Lastname  func(childComplexity int) int
+		TeacherID func(childComplexity int) int
 	}
 }
 
@@ -126,6 +150,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	ClassRooms(ctx context.Context, subjectID string) ([]*models.ClassRoom, error)
 	ClassRoom(ctx context.Context, classRoomID string) (*models.ClassRoom, error)
+	ClassRoomsTeacher(ctx context.Context, teacherID string) ([]*models.ClassRoom, error)
 	Chapters(ctx context.Context, classRoomID string) ([]*models.Chapter, error)
 	Lessons(ctx context.Context, chapterID string) ([]*models.Lesson, error)
 	Documents(ctx context.Context, lessonID string) ([]*models.Document, error)
@@ -152,6 +177,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
+	case "Chapter.arabicDescription":
+		if e.complexity.Chapter.ArabicDescription == nil {
+			break
+		}
+
+		return e.complexity.Chapter.ArabicDescription(childComplexity), true
+
 	case "Chapter.arabicTitle":
 		if e.complexity.Chapter.ArabicTitle == nil {
 			break
@@ -173,12 +205,33 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Chapter.Description(childComplexity), true
 
+	case "Chapter.lessons":
+		if e.complexity.Chapter.Lessons == nil {
+			break
+		}
+
+		return e.complexity.Chapter.Lessons(childComplexity), true
+
 	case "Chapter.title":
 		if e.complexity.Chapter.Title == nil {
 			break
 		}
 
 		return e.complexity.Chapter.Title(childComplexity), true
+
+	case "ClassRoom.arabicDescription":
+		if e.complexity.ClassRoom.ArabicDescription == nil {
+			break
+		}
+
+		return e.complexity.ClassRoom.ArabicDescription(childComplexity), true
+
+	case "ClassRoom.arabicTitle":
+		if e.complexity.ClassRoom.ArabicTitle == nil {
+			break
+		}
+
+		return e.complexity.ClassRoom.ArabicTitle(childComplexity), true
 
 	case "ClassRoom.badge":
 		if e.complexity.ClassRoom.Badge == nil {
@@ -187,12 +240,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ClassRoom.Badge(childComplexity), true
 
+	case "ClassRoom.chapters":
+		if e.complexity.ClassRoom.Chapters == nil {
+			break
+		}
+
+		return e.complexity.ClassRoom.Chapters(childComplexity), true
+
 	case "ClassRoom.classRoomID":
 		if e.complexity.ClassRoom.ClassRoomID == nil {
 			break
 		}
 
 		return e.complexity.ClassRoom.ClassRoomID(childComplexity), true
+
+	case "ClassRoom.description":
+		if e.complexity.ClassRoom.Description == nil {
+			break
+		}
+
+		return e.complexity.ClassRoom.Description(childComplexity), true
 
 	case "ClassRoom.image":
 		if e.complexity.ClassRoom.Image == nil {
@@ -208,7 +275,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ClassRoom.Price(childComplexity), true
 
-	case "ClassRoom.Rating":
+	case "ClassRoom.rating":
 		if e.complexity.ClassRoom.Rating == nil {
 			break
 		}
@@ -222,12 +289,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ClassRoom.StudentCount(childComplexity), true
 
+	case "ClassRoom.teacher":
+		if e.complexity.ClassRoom.Teacher == nil {
+			break
+		}
+
+		return e.complexity.ClassRoom.Teacher(childComplexity), true
+
 	case "ClassRoom.title":
 		if e.complexity.ClassRoom.Title == nil {
 			break
 		}
 
 		return e.complexity.ClassRoom.Title(childComplexity), true
+
+	case "Document.arabicDescription":
+		if e.complexity.Document.ArabicDescription == nil {
+			break
+		}
+
+		return e.complexity.Document.ArabicDescription(childComplexity), true
 
 	case "Document.arabicTitle":
 		if e.complexity.Document.ArabicTitle == nil {
@@ -285,6 +366,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Document.Title(childComplexity), true
 
+	case "Duration.hours":
+		if e.complexity.Duration.Hours == nil {
+			break
+		}
+
+		return e.complexity.Duration.Hours(childComplexity), true
+
+	case "Duration.minutes":
+		if e.complexity.Duration.Minutes == nil {
+			break
+		}
+
+		return e.complexity.Duration.Minutes(childComplexity), true
+
+	case "Duration.nanoseconds":
+		if e.complexity.Duration.Nanoseconds == nil {
+			break
+		}
+
+		return e.complexity.Duration.Nanoseconds(childComplexity), true
+
+	case "Duration.seconds":
+		if e.complexity.Duration.Seconds == nil {
+			break
+		}
+
+		return e.complexity.Duration.Seconds(childComplexity), true
+
+	case "Lesson.arabicDescription":
+		if e.complexity.Lesson.ArabicDescription == nil {
+			break
+		}
+
+		return e.complexity.Lesson.ArabicDescription(childComplexity), true
+
 	case "Lesson.arabicTitle":
 		if e.complexity.Lesson.ArabicTitle == nil {
 			break
@@ -298,6 +414,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Lesson.Description(childComplexity), true
+
+	case "Lesson.documents":
+		if e.complexity.Lesson.Documents == nil {
+			break
+		}
+
+		return e.complexity.Lesson.Documents(childComplexity), true
 
 	case "Lesson.lessonID":
 		if e.complexity.Lesson.LessonID == nil {
@@ -452,6 +575,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.ClassRooms(childComplexity, args["subjectID"].(string)), true
 
+	case "Query.classRoomsTeacher":
+		if e.complexity.Query.ClassRoomsTeacher == nil {
+			break
+		}
+
+		args, err := ec.field_Query_classRoomsTeacher_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ClassRoomsTeacher(childComplexity, args["teacherID"].(string)), true
+
 	case "Query.documents":
 		if e.complexity.Query.Documents == nil {
 			break
@@ -513,6 +648,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.StudentLesson.Lesson(childComplexity), true
+
+	case "Teacher.firstname":
+		if e.complexity.Teacher.Firstname == nil {
+			break
+		}
+
+		return e.complexity.Teacher.Firstname(childComplexity), true
+
+	case "Teacher.lastname":
+		if e.complexity.Teacher.Lastname == nil {
+			break
+		}
+
+		return e.complexity.Teacher.Lastname(childComplexity), true
+
+	case "Teacher.teacherID":
+		if e.complexity.Teacher.TeacherID == nil {
+			break
+		}
+
+		return e.complexity.Teacher.TeacherID(childComplexity), true
 
 	}
 	return 0, false
@@ -810,6 +966,21 @@ func (ec *executionContext) field_Query_classRoom_args(ctx context.Context, rawA
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_classRoomsTeacher_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["teacherID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teacherID"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["teacherID"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_classRooms_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1099,6 +1270,108 @@ func (ec *executionContext) fieldContext_Chapter_description(ctx context.Context
 	return fc, nil
 }
 
+func (ec *executionContext) _Chapter_arabicDescription(ctx context.Context, field graphql.CollectedField, obj *models.Chapter) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Chapter_arabicDescription(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ArabicDescription, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Chapter_arabicDescription(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Chapter",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Chapter_lessons(ctx context.Context, field graphql.CollectedField, obj *models.Chapter) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Chapter_lessons(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Lessons, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Lesson)
+	fc.Result = res
+	return ec.marshalNLesson2ᚕᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐLessonᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Chapter_lessons(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Chapter",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "lessonID":
+				return ec.fieldContext_Lesson_lessonID(ctx, field)
+			case "title":
+				return ec.fieldContext_Lesson_title(ctx, field)
+			case "arabicTitle":
+				return ec.fieldContext_Lesson_arabicTitle(ctx, field)
+			case "description":
+				return ec.fieldContext_Lesson_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_Lesson_arabicDescription(ctx, field)
+			case "documents":
+				return ec.fieldContext_Lesson_documents(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Lesson", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _ClassRoom_classRoomID(ctx context.Context, field graphql.CollectedField, obj *models.ClassRoom) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_ClassRoom_classRoomID(ctx, field)
 	if err != nil {
@@ -1363,8 +1636,8 @@ func (ec *executionContext) fieldContext_ClassRoom_studentCount(ctx context.Cont
 	return fc, nil
 }
 
-func (ec *executionContext) _ClassRoom_Rating(ctx context.Context, field graphql.CollectedField, obj *models.ClassRoom) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ClassRoom_Rating(ctx, field)
+func (ec *executionContext) _ClassRoom_rating(ctx context.Context, field graphql.CollectedField, obj *models.ClassRoom) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ClassRoom_rating(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1394,7 +1667,7 @@ func (ec *executionContext) _ClassRoom_Rating(ctx context.Context, field graphql
 	return ec.marshalNFloat2float64(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_ClassRoom_Rating(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_ClassRoom_rating(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "ClassRoom",
 		Field:      field,
@@ -1402,6 +1675,248 @@ func (ec *executionContext) fieldContext_ClassRoom_Rating(ctx context.Context, f
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Float does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ClassRoom_arabicTitle(ctx context.Context, field graphql.CollectedField, obj *models.ClassRoom) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ClassRoom_arabicTitle(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ArabicTitle, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ClassRoom_arabicTitle(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ClassRoom",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ClassRoom_description(ctx context.Context, field graphql.CollectedField, obj *models.ClassRoom) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ClassRoom_description(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ClassRoom_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ClassRoom",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ClassRoom_arabicDescription(ctx context.Context, field graphql.CollectedField, obj *models.ClassRoom) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ClassRoom_arabicDescription(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ArabicDescription, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ClassRoom_arabicDescription(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ClassRoom",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ClassRoom_teacher(ctx context.Context, field graphql.CollectedField, obj *models.ClassRoom) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ClassRoom_teacher(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Teacher, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Teacher)
+	fc.Result = res
+	return ec.marshalNTeacher2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐTeacher(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ClassRoom_teacher(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ClassRoom",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "teacherID":
+				return ec.fieldContext_Teacher_teacherID(ctx, field)
+			case "firstname":
+				return ec.fieldContext_Teacher_firstname(ctx, field)
+			case "lastname":
+				return ec.fieldContext_Teacher_lastname(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Teacher", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ClassRoom_chapters(ctx context.Context, field graphql.CollectedField, obj *models.ClassRoom) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ClassRoom_chapters(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Chapters, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Chapter)
+	fc.Result = res
+	return ec.marshalNChapter2ᚕᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐChapterᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ClassRoom_chapters(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ClassRoom",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "chapterID":
+				return ec.fieldContext_Chapter_chapterID(ctx, field)
+			case "title":
+				return ec.fieldContext_Chapter_title(ctx, field)
+			case "arabicTitle":
+				return ec.fieldContext_Chapter_arabicTitle(ctx, field)
+			case "description":
+				return ec.fieldContext_Chapter_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_Chapter_arabicDescription(ctx, field)
+			case "lessons":
+				return ec.fieldContext_Chapter_lessons(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Chapter", field.Name)
 		},
 	}
 	return fc, nil
@@ -1627,6 +2142,50 @@ func (ec *executionContext) fieldContext_Document_description(ctx context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _Document_arabicDescription(ctx context.Context, field graphql.CollectedField, obj *models.Document) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Document_arabicDescription(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ArabicDescription, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Document_arabicDescription(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Document",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Document_duration(ctx context.Context, field graphql.CollectedField, obj *models.Document) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Document_duration(ctx, field)
 	if err != nil {
@@ -1653,9 +2212,9 @@ func (ec *executionContext) _Document_duration(ctx context.Context, field graphq
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(*models.Duration)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNDuration2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐDuration(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Document_duration(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1665,7 +2224,17 @@ func (ec *executionContext) fieldContext_Document_duration(ctx context.Context, 
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Int does not have child fields")
+			switch field.Name {
+			case "hours":
+				return ec.fieldContext_Duration_hours(ctx, field)
+			case "minutes":
+				return ec.fieldContext_Duration_minutes(ctx, field)
+			case "seconds":
+				return ec.fieldContext_Duration_seconds(ctx, field)
+			case "nanoseconds":
+				return ec.fieldContext_Duration_nanoseconds(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Duration", field.Name)
 		},
 	}
 	return fc, nil
@@ -1754,6 +2323,182 @@ func (ec *executionContext) fieldContext_Document_documentLink(ctx context.Conte
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Duration_hours(ctx context.Context, field graphql.CollectedField, obj *models.Duration) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Duration_hours(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Hours, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Duration_hours(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Duration",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Duration_minutes(ctx context.Context, field graphql.CollectedField, obj *models.Duration) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Duration_minutes(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Minutes, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Duration_minutes(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Duration",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Duration_seconds(ctx context.Context, field graphql.CollectedField, obj *models.Duration) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Duration_seconds(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Seconds, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Duration_seconds(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Duration",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Duration_nanoseconds(ctx context.Context, field graphql.CollectedField, obj *models.Duration) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Duration_nanoseconds(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Nanoseconds, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Duration_nanoseconds(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Duration",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -1935,6 +2680,114 @@ func (ec *executionContext) fieldContext_Lesson_description(ctx context.Context,
 	return fc, nil
 }
 
+func (ec *executionContext) _Lesson_arabicDescription(ctx context.Context, field graphql.CollectedField, obj *models.Lesson) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Lesson_arabicDescription(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ArabicDescription, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Lesson_arabicDescription(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Lesson",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Lesson_documents(ctx context.Context, field graphql.CollectedField, obj *models.Lesson) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Lesson_documents(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Documents, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Document)
+	fc.Result = res
+	return ec.marshalNDocument2ᚕᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐDocumentᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Lesson_documents(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Lesson",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "documentID":
+				return ec.fieldContext_Document_documentID(ctx, field)
+			case "documentType":
+				return ec.fieldContext_Document_documentType(ctx, field)
+			case "title":
+				return ec.fieldContext_Document_title(ctx, field)
+			case "arabicTitle":
+				return ec.fieldContext_Document_arabicTitle(ctx, field)
+			case "description":
+				return ec.fieldContext_Document_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_Document_arabicDescription(ctx, field)
+			case "duration":
+				return ec.fieldContext_Document_duration(ctx, field)
+			case "lectureNumber":
+				return ec.fieldContext_Document_lectureNumber(ctx, field)
+			case "documentLink":
+				return ec.fieldContext_Document_documentLink(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Document", field.Name)
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_createChapter(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_createChapter(ctx, field)
 	if err != nil {
@@ -1982,6 +2835,10 @@ func (ec *executionContext) fieldContext_Mutation_createChapter(ctx context.Cont
 				return ec.fieldContext_Chapter_arabicTitle(ctx, field)
 			case "description":
 				return ec.fieldContext_Chapter_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_Chapter_arabicDescription(ctx, field)
+			case "lessons":
+				return ec.fieldContext_Chapter_lessons(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Chapter", field.Name)
 		},
@@ -2047,6 +2904,10 @@ func (ec *executionContext) fieldContext_Mutation_updateChapter(ctx context.Cont
 				return ec.fieldContext_Chapter_arabicTitle(ctx, field)
 			case "description":
 				return ec.fieldContext_Chapter_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_Chapter_arabicDescription(ctx, field)
+			case "lessons":
+				return ec.fieldContext_Chapter_lessons(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Chapter", field.Name)
 		},
@@ -2171,6 +3032,10 @@ func (ec *executionContext) fieldContext_Mutation_createLesson(ctx context.Conte
 				return ec.fieldContext_Lesson_arabicTitle(ctx, field)
 			case "description":
 				return ec.fieldContext_Lesson_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_Lesson_arabicDescription(ctx, field)
+			case "documents":
+				return ec.fieldContext_Lesson_documents(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Lesson", field.Name)
 		},
@@ -2236,6 +3101,10 @@ func (ec *executionContext) fieldContext_Mutation_updateLesson(ctx context.Conte
 				return ec.fieldContext_Lesson_arabicTitle(ctx, field)
 			case "description":
 				return ec.fieldContext_Lesson_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_Lesson_arabicDescription(ctx, field)
+			case "documents":
+				return ec.fieldContext_Lesson_documents(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Lesson", field.Name)
 		},
@@ -2520,8 +3389,18 @@ func (ec *executionContext) fieldContext_Query_classRooms(ctx context.Context, f
 				return ec.fieldContext_ClassRoom_badge(ctx, field)
 			case "studentCount":
 				return ec.fieldContext_ClassRoom_studentCount(ctx, field)
-			case "Rating":
-				return ec.fieldContext_ClassRoom_Rating(ctx, field)
+			case "rating":
+				return ec.fieldContext_ClassRoom_rating(ctx, field)
+			case "arabicTitle":
+				return ec.fieldContext_ClassRoom_arabicTitle(ctx, field)
+			case "description":
+				return ec.fieldContext_ClassRoom_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_ClassRoom_arabicDescription(ctx, field)
+			case "teacher":
+				return ec.fieldContext_ClassRoom_teacher(ctx, field)
+			case "chapters":
+				return ec.fieldContext_ClassRoom_chapters(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ClassRoom", field.Name)
 		},
@@ -2591,8 +3470,18 @@ func (ec *executionContext) fieldContext_Query_classRoom(ctx context.Context, fi
 				return ec.fieldContext_ClassRoom_badge(ctx, field)
 			case "studentCount":
 				return ec.fieldContext_ClassRoom_studentCount(ctx, field)
-			case "Rating":
-				return ec.fieldContext_ClassRoom_Rating(ctx, field)
+			case "rating":
+				return ec.fieldContext_ClassRoom_rating(ctx, field)
+			case "arabicTitle":
+				return ec.fieldContext_ClassRoom_arabicTitle(ctx, field)
+			case "description":
+				return ec.fieldContext_ClassRoom_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_ClassRoom_arabicDescription(ctx, field)
+			case "teacher":
+				return ec.fieldContext_ClassRoom_teacher(ctx, field)
+			case "chapters":
+				return ec.fieldContext_ClassRoom_chapters(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ClassRoom", field.Name)
 		},
@@ -2605,6 +3494,87 @@ func (ec *executionContext) fieldContext_Query_classRoom(ctx context.Context, fi
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_classRoom_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_classRoomsTeacher(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_classRoomsTeacher(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ClassRoomsTeacher(rctx, fc.Args["teacherID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.ClassRoom)
+	fc.Result = res
+	return ec.marshalNClassRoom2ᚕᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐClassRoomᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_classRoomsTeacher(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "classRoomID":
+				return ec.fieldContext_ClassRoom_classRoomID(ctx, field)
+			case "title":
+				return ec.fieldContext_ClassRoom_title(ctx, field)
+			case "image":
+				return ec.fieldContext_ClassRoom_image(ctx, field)
+			case "price":
+				return ec.fieldContext_ClassRoom_price(ctx, field)
+			case "badge":
+				return ec.fieldContext_ClassRoom_badge(ctx, field)
+			case "studentCount":
+				return ec.fieldContext_ClassRoom_studentCount(ctx, field)
+			case "rating":
+				return ec.fieldContext_ClassRoom_rating(ctx, field)
+			case "arabicTitle":
+				return ec.fieldContext_ClassRoom_arabicTitle(ctx, field)
+			case "description":
+				return ec.fieldContext_ClassRoom_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_ClassRoom_arabicDescription(ctx, field)
+			case "teacher":
+				return ec.fieldContext_ClassRoom_teacher(ctx, field)
+			case "chapters":
+				return ec.fieldContext_ClassRoom_chapters(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ClassRoom", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_classRoomsTeacher_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -2658,6 +3628,10 @@ func (ec *executionContext) fieldContext_Query_chapters(ctx context.Context, fie
 				return ec.fieldContext_Chapter_arabicTitle(ctx, field)
 			case "description":
 				return ec.fieldContext_Chapter_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_Chapter_arabicDescription(ctx, field)
+			case "lessons":
+				return ec.fieldContext_Chapter_lessons(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Chapter", field.Name)
 		},
@@ -2723,6 +3697,10 @@ func (ec *executionContext) fieldContext_Query_lessons(ctx context.Context, fiel
 				return ec.fieldContext_Lesson_arabicTitle(ctx, field)
 			case "description":
 				return ec.fieldContext_Lesson_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_Lesson_arabicDescription(ctx, field)
+			case "documents":
+				return ec.fieldContext_Lesson_documents(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Lesson", field.Name)
 		},
@@ -2790,6 +3768,8 @@ func (ec *executionContext) fieldContext_Query_documents(ctx context.Context, fi
 				return ec.fieldContext_Document_arabicTitle(ctx, field)
 			case "description":
 				return ec.fieldContext_Document_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_Document_arabicDescription(ctx, field)
 			case "duration":
 				return ec.fieldContext_Document_duration(ctx, field)
 			case "lectureNumber":
@@ -2926,8 +3906,18 @@ func (ec *executionContext) fieldContext_Query_myClassRooms(ctx context.Context,
 				return ec.fieldContext_ClassRoom_badge(ctx, field)
 			case "studentCount":
 				return ec.fieldContext_ClassRoom_studentCount(ctx, field)
-			case "Rating":
-				return ec.fieldContext_ClassRoom_Rating(ctx, field)
+			case "rating":
+				return ec.fieldContext_ClassRoom_rating(ctx, field)
+			case "arabicTitle":
+				return ec.fieldContext_ClassRoom_arabicTitle(ctx, field)
+			case "description":
+				return ec.fieldContext_ClassRoom_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_ClassRoom_arabicDescription(ctx, field)
+			case "teacher":
+				return ec.fieldContext_ClassRoom_teacher(ctx, field)
+			case "chapters":
+				return ec.fieldContext_ClassRoom_chapters(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ClassRoom", field.Name)
 		},
@@ -3122,6 +4112,10 @@ func (ec *executionContext) fieldContext_StudentLesson_lesson(ctx context.Contex
 				return ec.fieldContext_Lesson_arabicTitle(ctx, field)
 			case "description":
 				return ec.fieldContext_Lesson_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_Lesson_arabicDescription(ctx, field)
+			case "documents":
+				return ec.fieldContext_Lesson_documents(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Lesson", field.Name)
 		},
@@ -3168,6 +4162,138 @@ func (ec *executionContext) fieldContext_StudentLesson_canAccess(ctx context.Con
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Teacher_teacherID(ctx context.Context, field graphql.CollectedField, obj *models.Teacher) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Teacher_teacherID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TeacherID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Teacher_teacherID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Teacher",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Teacher_firstname(ctx context.Context, field graphql.CollectedField, obj *models.Teacher) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Teacher_firstname(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Firstname, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Teacher_firstname(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Teacher",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Teacher_lastname(ctx context.Context, field graphql.CollectedField, obj *models.Teacher) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Teacher_lastname(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Lastname, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Teacher_lastname(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Teacher",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -5245,6 +6371,16 @@ func (ec *executionContext) _Chapter(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "arabicDescription":
+			out.Values[i] = ec._Chapter_arabicDescription(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "lessons":
+			out.Values[i] = ec._Chapter_lessons(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5309,8 +6445,33 @@ func (ec *executionContext) _ClassRoom(ctx context.Context, sel ast.SelectionSet
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
-		case "Rating":
-			out.Values[i] = ec._ClassRoom_Rating(ctx, field, obj)
+		case "rating":
+			out.Values[i] = ec._ClassRoom_rating(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "arabicTitle":
+			out.Values[i] = ec._ClassRoom_arabicTitle(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "description":
+			out.Values[i] = ec._ClassRoom_description(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "arabicDescription":
+			out.Values[i] = ec._ClassRoom_arabicDescription(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "teacher":
+			out.Values[i] = ec._ClassRoom_teacher(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "chapters":
+			out.Values[i] = ec._ClassRoom_chapters(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -5373,6 +6534,11 @@ func (ec *executionContext) _Document(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "arabicDescription":
+			out.Values[i] = ec._Document_arabicDescription(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "duration":
 			out.Values[i] = ec._Document_duration(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -5385,6 +6551,60 @@ func (ec *executionContext) _Document(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "documentLink":
 			out.Values[i] = ec._Document_documentLink(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var durationImplementors = []string{"Duration"}
+
+func (ec *executionContext) _Duration(ctx context.Context, sel ast.SelectionSet, obj *models.Duration) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, durationImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Duration")
+		case "hours":
+			out.Values[i] = ec._Duration_hours(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "minutes":
+			out.Values[i] = ec._Duration_minutes(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "seconds":
+			out.Values[i] = ec._Duration_seconds(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "nanoseconds":
+			out.Values[i] = ec._Duration_nanoseconds(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -5439,6 +6659,16 @@ func (ec *executionContext) _Lesson(ctx context.Context, sel ast.SelectionSet, o
 			}
 		case "description":
 			out.Values[i] = ec._Lesson_description(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "arabicDescription":
+			out.Values[i] = ec._Lesson_arabicDescription(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "documents":
+			out.Values[i] = ec._Lesson_documents(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -5659,6 +6889,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "classRoomsTeacher":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_classRoomsTeacher(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "chapters":
 			field := field
 
@@ -5818,6 +7070,55 @@ func (ec *executionContext) _StudentLesson(ctx context.Context, sel ast.Selectio
 			}
 		case "canAccess":
 			out.Values[i] = ec._StudentLesson_canAccess(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var teacherImplementors = []string{"Teacher"}
+
+func (ec *executionContext) _Teacher(ctx context.Context, sel ast.SelectionSet, obj *models.Teacher) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, teacherImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Teacher")
+		case "teacherID":
+			out.Values[i] = ec._Teacher_teacherID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "firstname":
+			out.Values[i] = ec._Teacher_firstname(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "lastname":
+			out.Values[i] = ec._Teacher_lastname(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -6365,6 +7666,16 @@ func (ec *executionContext) marshalNDocument2ᚖgithubᚗcomᚋlesᚑcoursᚋlea
 	return ec._Document(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNDuration2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐDuration(ctx context.Context, sel ast.SelectionSet, v *models.Duration) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Duration(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNFloat2float64(ctx context.Context, v interface{}) (float64, error) {
 	res, err := graphql.UnmarshalFloatContext(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -6539,6 +7850,16 @@ func (ec *executionContext) marshalNStudentLesson2ᚖgithubᚗcomᚋlesᚑcours�
 		return graphql.Null
 	}
 	return ec._StudentLesson(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNTeacher2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐTeacher(ctx context.Context, sel ast.SelectionSet, v *models.Teacher) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Teacher(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNUpdateChapterInput2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐUpdateChapterInput(ctx context.Context, v interface{}) (models.UpdateChapterInput, error) {

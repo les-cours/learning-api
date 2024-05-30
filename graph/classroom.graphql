@@ -5,14 +5,28 @@ type ClassRoom {
     price: Int!
     badge: String!
     studentCount: Int!
-    Rating: Float!
+    rating: Float!
+    arabicTitle: String!
+    description: String!
+    arabicDescription: String!
+    teacher: Teacher!
+    chapters: [Chapter!]!
 }
+
+type Teacher {
+    teacherID: String!
+    firstname: String!
+    lastname: String!
+}
+
 
 type Chapter {
     chapterID: String!
     title: String!
     arabicTitle:String!
     description: String!
+    arabicDescription: String!
+    lessons: [Lesson!]!
 }
 
 type Lesson {
@@ -20,6 +34,8 @@ type Lesson {
     title: String!
     arabicTitle:String!
     description: String!
+    arabicDescription: String!
+    documents: [Document!]!
 }
 
 type StudentLesson {
@@ -33,11 +49,18 @@ type Document {
     title: String!
     arabicTitle: String!
     description: String!
-    duration: Int!
+    arabicDescription: String!
+    duration: Duration!
     lectureNumber: Int!
     documentLink: String!
 }
 
+type Duration {
+ hours : Int!
+ minutes : Int!
+ seconds : Int!
+ nanoseconds : Int!
+}
 
 
 

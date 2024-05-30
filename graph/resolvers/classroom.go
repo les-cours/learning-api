@@ -11,24 +11,29 @@ import (
 
 func (r *queryResolver) ClassRooms(ctx context.Context, subjectID string) ([]*models.ClassRoom, error) {
 
-	var ClassRooms []*models.ClassRoom
-
 	res, err := r.LearningClient.GetClassRooms(ctx, &learning.IDRequest{
 		Id: subjectID,
 	})
 	if err != nil {
 		return nil, ErrApi(err)
 	}
-	for _, ClassRoom := range res.Classrooms {
-		ClassRooms = append(ClassRooms, gprcToGraph.ClassRoom(ClassRoom))
+	return gprcToGraph.ClassRooms(res), nil
+}
+
+func (r *queryResolver) ClassRoomsTeacher(ctx context.Context, teacherID string) ([]*models.ClassRoom, error) {
+
+	res, err := r.LearningClient.GetClassRoomsByTeacher(ctx, &learning.IDRequest{
+		Id: teacherID,
+	})
+	if err != nil {
+		return nil, ErrApi(err)
 	}
 
-	return ClassRooms, nil
+	return gprcToGraph.ClassRooms(res), nil
 }
 
 func (r *queryResolver) ClassRoom(ctx context.Context, ClassRoomID string) (*models.ClassRoom, error) {
-
-	log.Println("ClassRoom ... ")
+	log.Println("ClassRoom Started ....")
 	ClassRoom, err := r.LearningClient.GetClassRoom(ctx, &learning.IDRequest{
 		Id: ClassRoomID,
 	})
@@ -72,7 +77,6 @@ func (r *queryResolver) MyClassRooms(ctx context.Context, subjectID string) ([]*
 	if err != nil {
 		return nil, ErrApi(err)
 	}
-	lessons := gprcToGraph.ClassRooms(res)
 
-	return lessons, nil
+	return gprcToGraph.ClassRooms(res), nil
 }
