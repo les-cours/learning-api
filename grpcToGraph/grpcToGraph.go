@@ -7,7 +7,12 @@ import (
 )
 
 func ClassRoom(classRoom *learning.ClassRoom) *models.ClassRoom {
-	log.Println("classroom 10 ", classRoom.Chapters)
+	if classRoom.Teacher == nil {
+		classRoom.Teacher = &learning.Teacher{}
+	}
+	if classRoom.Chapters == nil {
+		classRoom.Chapters = &learning.Chapters{}
+	}
 	return &models.ClassRoom{
 		ClassRoomID:       classRoom.ClassRoomID,
 		Title:             classRoom.Title,
@@ -32,15 +37,15 @@ func ClassRooms(cs *learning.ClassRooms) []*models.ClassRoom {
 	var classRooms = make([]*models.ClassRoom, 0)
 
 	for _, c := range cs.Classrooms {
-		if c.Chapters == nil {
-			c.Chapters = &learning.Chapters{}
-		}
 		classRooms = append(classRooms, ClassRoom(c))
 	}
 	return classRooms
 }
 
 func Chapter(chapter *learning.Chapter) *models.Chapter {
+	if chapter.Lessons == nil {
+		chapter.Lessons = &learning.Lessons{}
+	}
 	return &models.Chapter{
 		ChapterID:         chapter.ChapterID,
 		Title:             chapter.Title,
@@ -61,6 +66,9 @@ func Chapters(chapters *learning.Chapters) []*models.Chapter {
 }
 
 func Lesson(lesson *learning.Lesson) *models.Lesson {
+	if lesson.Documents == nil {
+		lesson.Documents = &learning.Documents{}
+	}
 	return &models.Lesson{
 		LessonID:          lesson.LessonID,
 		Title:             lesson.Title,
