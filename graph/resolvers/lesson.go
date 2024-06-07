@@ -98,26 +98,3 @@ func (r *mutationResolver) DeleteLesson(ctx context.Context, in models.IDRequest
 		Succeeded: true,
 	}, nil
 }
-
-/*
-STUDENTS
-*/
-
-func (r *queryResolver) MyLessons(ctx context.Context, chapterID string) ([]*models.StudentLesson, error) {
-
-	student, err := permisions.Student(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := r.LearningClient.GetLessonsByStudent(ctx, &learning.IDRequest{
-		Id:     chapterID,
-		UserID: student.ID,
-	})
-	if err != nil {
-		return nil, ErrApi(err)
-	}
-	lessons := gprcToGraph.StudentLessons(res)
-
-	return lessons, nil
-}

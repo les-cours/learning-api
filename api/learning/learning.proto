@@ -63,30 +63,19 @@ message AddDocumentToClassroomRequest {
   string classRoomID = 1;
 }
 
-
-
 message Lesson {
   string lessonID = 1;
   string title = 2;
   string  arabicTitle= 3;
   string description = 4;
   string arabicDescription = 5;
-  int32 month_id  = 8;
-  Documents documents = 9;
+  Documents documents = 6;
 }
 
 message Lessons{
   repeated Lesson lessons = 1;
 }
 
-message StudentLesson {
-  Lesson lesson = 1;
-  bool canAccess = 2;
-}
-
-message StudentLessons{
-  repeated StudentLesson lessons = 1;
-}
 
 message CreateLessonRequest{
   string userID = 6;
@@ -111,8 +100,9 @@ message UploadVideoRequest {
 }
 
 message Chapters {
-  repeated Chapter chapters = 1 ;
+  repeated Chapter chapters =1 ;
 }
+
 
 message Chapter {
   string chapterID = 1;
@@ -156,6 +146,18 @@ message CreateVideoRequest {
   UploadVideoRequest video = 9;
 }
 
+message  CreatePdfRequest {
+  string userID = 1;
+  string lessonID = 2;
+  string title = 4;
+  string arabic_title = 5;
+  string description = 6;
+  string arabicDescription = 7;
+  int32  lecture_number = 8;
+  string url = 9;
+}
+
+
 message Document {
   string documentID = 1;
   string documentType = 3;
@@ -172,24 +174,12 @@ message DocumentLink {
   string DocumentLink = 1;
 }
 
-message  CreatePdfRequest {
-  string userID = 1;
-  string lessonID = 2;
-  string title = 4;
-  string arabic_title = 5;
-  string description = 6;
-  string arabicDescription = 7;
-  int32  lecture_number = 8;
-  string url = 9;
-}
-
 message Duration {
   int32 hours = 1;
   int32 minutes = 2;
   int32 seconds = 3;
   int32 nanoseconds = 4;
 }
-
 message Documents{
   repeated Document documents = 1;
 }
@@ -220,10 +210,10 @@ service LearningService {
   rpc CreateLesson(CreateLessonRequest)returns (Lesson){}
   rpc UpdateLesson(UpdateLessonRequest)returns (Lesson){}
   rpc DeleteLesson(IDRequest)returns (OperationStatus){}
-  rpc GetLessonsByStudent(IDRequest)returns(StudentLessons){}
   /*
    DOCUMENT
 */
+
   rpc GetDocuments(IDRequest)returns (Documents){}
   rpc GetDocument(IDRequest)returns (DocumentLink){}
   rpc DeleteDocument(IDRequest)returns (OperationStatus){}
@@ -231,5 +221,7 @@ service LearningService {
   rpc CreateVideo(CreateVideoRequest)returns (Document){}
 
   rpc CreatePdf(CreatePdfRequest)returns (Document){}
+
+
 
 }

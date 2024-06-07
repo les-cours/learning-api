@@ -30,6 +30,7 @@ type Query {
     classRooms(subjectID: String!): [ClassRoom!]!
     classRoom(classRoomID: String!): ClassRoom!
     classRoomsTeacher(teacherID: String!):[ClassRoom!]!
+    MyClassRoomsTeacher:[ClassRoom!]!
     chapters(classRoomID: String!): [Chapter!]!
 
     lessons(chapterID: String!): [Lesson!]!
@@ -37,7 +38,6 @@ type Query {
     documents(lessonID: String!): [Document!]!
     document(documentID: String!): DocumentLink!
 
-    myLessons(chapterID: String!): [StudentLesson!]!
     myClassRooms(subjectID: String!): [ClassRoom!]!
 }
 

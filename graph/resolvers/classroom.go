@@ -22,6 +22,11 @@ func (r *queryResolver) ClassRooms(ctx context.Context, subjectID string) ([]*mo
 
 func (r *queryResolver) ClassRoomsTeacher(ctx context.Context, teacherID string) ([]*models.ClassRoom, error) {
 
+	_, err := permisions.CanRead(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	res, err := r.LearningClient.GetClassRoomsByTeacher(ctx, &learning.IDRequest{
 		Id: teacherID,
 	})
@@ -29,6 +34,30 @@ func (r *queryResolver) ClassRoomsTeacher(ctx context.Context, teacherID string)
 		return nil, ErrApi(err)
 	}
 
+	return gprcToGraph.ClassRooms(res), nil
+}
+
+func (r *queryResolver) MyClassRoomsTeacher(ctx context.Context) ([]*models.ClassRoom, error) {
+
+	user, err := permisions.CanRead(ctx)
+	if err != nil {
+		return nil, err
+	}
+	res, err := r.LearningClient.GetClassRoomsByTeacher(ctx, &learning.IDRequest{
+		Id: user.ID,
+	})
+	if err != nil {
+		return nil, ErrApi(err)
+	}
+
+	for _, classroom := range res.Classrooms {
+		for _, ch := range classroom.Chapters.Chapters {
+			for _, l := range ch.Lessons.Lessons {
+				log.Println(l.Documents)
+
+			}
+		}
+	}
 	return gprcToGraph.ClassRooms(res), nil
 }
 

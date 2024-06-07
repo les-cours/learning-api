@@ -38,10 +38,6 @@ type Lesson {
     documents: [Document!]!
 }
 
-type StudentLesson {
-    lesson: Lesson!
-    canAccess: Boolean!
-}
 
 type Document {
     documentID: String!

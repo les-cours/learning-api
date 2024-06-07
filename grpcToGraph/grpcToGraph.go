@@ -56,7 +56,7 @@ func Chapter(chapter *learning.Chapter) *models.Chapter {
 	}
 }
 func Chapters(chapters *learning.Chapters) []*models.Chapter {
-	log.Println("ch : ", chapters)
+
 	var cc = make([]*models.Chapter, 0)
 
 	for _, c := range chapters.Chapters {
@@ -66,9 +66,11 @@ func Chapters(chapters *learning.Chapters) []*models.Chapter {
 }
 
 func Lesson(lesson *learning.Lesson) *models.Lesson {
+
 	if lesson.Documents == nil {
 		lesson.Documents = &learning.Documents{}
 	}
+	log.Println("len : ", len(lesson.Documents.Documents))
 	return &models.Lesson{
 		LessonID:          lesson.LessonID,
 		Title:             lesson.Title,
@@ -84,27 +86,6 @@ func Lessons(ls *learning.Lessons) []*models.Lesson {
 
 	for _, l := range ls.Lessons {
 		lessons = append(lessons, Lesson(l))
-	}
-	return lessons
-}
-
-func StudentLesson(lesson *learning.StudentLesson) *models.StudentLesson {
-
-	return &models.StudentLesson{
-		Lesson: &models.Lesson{
-			LessonID:    lesson.Lesson.LessonID,
-			Title:       lesson.Lesson.Title,
-			ArabicTitle: lesson.Lesson.ArabicTitle,
-		},
-		CanAccess: lesson.CanAccess,
-	}
-
-}
-func StudentLessons(ls *learning.StudentLessons) []*models.StudentLesson {
-	var lessons = make([]*models.StudentLesson, 0)
-
-	for _, l := range ls.Lessons {
-		lessons = append(lessons, StudentLesson(l))
 	}
 	return lessons
 }

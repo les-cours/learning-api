@@ -100,11 +100,6 @@ type OperationStatus struct {
 type Query struct {
 }
 
-type StudentLesson struct {
-	Lesson    *Lesson `json:"lesson"`
-	CanAccess bool    `json:"canAccess"`
-}
-
 type Teacher struct {
 	TeacherID string `json:"teacherID"`
 	Firstname string `json:"firstname"`
