@@ -50,14 +50,6 @@ func (r *queryResolver) MyClassRoomsTeacher(ctx context.Context) ([]*models.Clas
 		return nil, ErrApi(err)
 	}
 
-	for _, classroom := range res.Classrooms {
-		for _, ch := range classroom.Chapters.Chapters {
-			for _, l := range ch.Lessons.Lessons {
-				log.Println(l.Documents)
-
-			}
-		}
-	}
 	return gprcToGraph.ClassRooms(res), nil
 }
 

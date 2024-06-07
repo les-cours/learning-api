@@ -3,7 +3,6 @@ package gprcToGraph
 import (
 	"github.com/les-cours/learning-api/api/learning"
 	"github.com/les-cours/learning-api/graph/models"
-	"log"
 )
 
 func ClassRoom(classRoom *learning.ClassRoom) *models.ClassRoom {
@@ -70,7 +69,6 @@ func Lesson(lesson *learning.Lesson) *models.Lesson {
 	if lesson.Documents == nil {
 		lesson.Documents = &learning.Documents{}
 	}
-	log.Println("len : ", len(lesson.Documents.Documents))
 	return &models.Lesson{
 		LessonID:          lesson.LessonID,
 		Title:             lesson.Title,
