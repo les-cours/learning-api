@@ -56,7 +56,6 @@ type Document {
 }
 
 input CreatePdfInput {
-    userID: String!
     lessonID: String!
     title: String!
     arabicTitle: String!

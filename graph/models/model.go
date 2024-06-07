@@ -45,7 +45,6 @@ type CreateLessonInput struct {
 }
 
 type CreatePDFInput struct {
-	UserID            string `json:"userID"`
 	LessonID          string `json:"lessonID"`
 	Title             string `json:"title"`
 	ArabicTitle       string `json:"arabicTitle"`

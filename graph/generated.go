@@ -6511,20 +6511,13 @@ func (ec *executionContext) unmarshalInputCreatePdfInput(ctx context.Context, ob
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"userID", "lessonID", "title", "arabicTitle", "description", "arabicDescription", "lectureNumber", "url"}
+	fieldsInOrder := [...]string{"lessonID", "title", "arabicTitle", "description", "arabicDescription", "lectureNumber", "url"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "userID":
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
-			data, err := ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-			it.UserID = data
 		case "lessonID":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lessonID"))
 			data, err := ec.unmarshalNString2string(ctx, v)
