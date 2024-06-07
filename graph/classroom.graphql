@@ -55,6 +55,22 @@ type Document {
     documentLink: String!
 }
 
+input CreatePdfInput {
+    userID: String!
+    lessonID: String!
+    title: String!
+    arabicTitle: String!
+    description: String!
+    arabicDescription: String!
+    lectureNumber: Int!
+    url: String!
+}
+
+
+type DocumentLink {
+    documentLink: String!
+}
+
 type Duration {
  hours : Int!
  minutes : Int!

@@ -110,20 +110,25 @@ func StudentLessons(ls *learning.StudentLessons) []*models.StudentLesson {
 }
 
 func Document(document *learning.Document) *models.Document {
-	return &models.Document{
-		DocumentID:   document.DocumentID,
-		DocumentType: document.DocumentType,
-		Title:        document.Title,
-		ArabicTitle:  document.ArabicTitle,
-		Description:  document.Description,
-		Duration: &models.Duration{
+	var duration = new(models.Duration)
+	if document.Duration != nil {
+		duration = &models.Duration{
 			Hours:       int(document.Duration.Hours),
 			Minutes:     int(document.Duration.Minutes),
 			Seconds:     int(document.Duration.Seconds),
 			Nanoseconds: int(document.Duration.Nanoseconds),
-		},
+		}
+
+	}
+	return &models.Document{
+		DocumentID:        document.DocumentID,
+		DocumentType:      document.DocumentType,
+		Title:             document.Title,
+		ArabicTitle:       document.ArabicTitle,
+		Description:       document.Description,
 		LectureNumber:     int(document.LectureNumber),
 		DocumentLink:      document.DocumentLink,
+		Duration:          duration,
 		ArabicDescription: document.ArabicDescription,
 	}
 

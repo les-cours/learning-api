@@ -44,6 +44,17 @@ type CreateLessonInput struct {
 	Description string `json:"description"`
 }
 
+type CreatePDFInput struct {
+	UserID            string `json:"userID"`
+	LessonID          string `json:"lessonID"`
+	Title             string `json:"title"`
+	ArabicTitle       string `json:"arabicTitle"`
+	Description       string `json:"description"`
+	ArabicDescription string `json:"arabicDescription"`
+	LectureNumber     int    `json:"lectureNumber"`
+	URL               string `json:"url"`
+}
+
 type Document struct {
 	DocumentID        string    `json:"documentID"`
 	DocumentType      string    `json:"documentType"`
@@ -54,6 +65,10 @@ type Document struct {
 	Duration          *Duration `json:"duration"`
 	LectureNumber     int       `json:"lectureNumber"`
 	DocumentLink      string    `json:"documentLink"`
+}
+
+type DocumentLink struct {
+	DocumentLink string `json:"documentLink"`
 }
 
 type Duration struct {

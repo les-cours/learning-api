@@ -19,7 +19,12 @@ type Mutation {
     uploadVideo(input: UploadVideoInput!): OperationStatus
 
 
+    deleteDocument(documentID: String!):OperationStatus!
+
+    createPdf(in: CreatePdfInput!):Document!
+
 }
+
 
 type Query {
     classRooms(subjectID: String!): [ClassRoom!]!
@@ -30,9 +35,8 @@ type Query {
     lessons(chapterID: String!): [Lesson!]!
 
     documents(lessonID: String!): [Document!]!
+    document(documentID: String!): DocumentLink!
 
-
-# students
     myLessons(chapterID: String!): [StudentLesson!]!
     myClassRooms(subjectID: String!): [ClassRoom!]!
 }

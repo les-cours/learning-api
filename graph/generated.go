@@ -83,6 +83,10 @@ type ComplexityRoot struct {
 		Title             func(childComplexity int) int
 	}
 
+	DocumentLink struct {
+		DocumentLink func(childComplexity int) int
+	}
+
 	Duration struct {
 		Hours       func(childComplexity int) int
 		Minutes     func(childComplexity int) int
@@ -102,8 +106,10 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreateChapter   func(childComplexity int, in models.CreateChapterInput) int
 		CreateLesson    func(childComplexity int, in models.CreateLessonInput) int
+		CreatePDF       func(childComplexity int, in models.CreatePDFInput) int
 		DeleteChapter   func(childComplexity int, in models.IDRequest) int
 		DeleteClassRoom func(childComplexity int, in models.IDRequest) int
+		DeleteDocument  func(childComplexity int, documentID string) int
 		DeleteLesson    func(childComplexity int, in models.IDRequest) int
 		UpdateChapter   func(childComplexity int, in models.UpdateChapterInput) int
 		UpdateLesson    func(childComplexity int, in models.UpdateLessonInput) int
@@ -119,6 +125,7 @@ type ComplexityRoot struct {
 		ClassRoom         func(childComplexity int, classRoomID string) int
 		ClassRooms        func(childComplexity int, subjectID string) int
 		ClassRoomsTeacher func(childComplexity int, teacherID string) int
+		Document          func(childComplexity int, documentID string) int
 		Documents         func(childComplexity int, lessonID string) int
 		Lessons           func(childComplexity int, chapterID string) int
 		MyClassRooms      func(childComplexity int, subjectID string) int
@@ -146,6 +153,8 @@ type MutationResolver interface {
 	DeleteLesson(ctx context.Context, in models.IDRequest) (*models.OperationStatus, error)
 	DeleteClassRoom(ctx context.Context, in models.IDRequest) (*models.OperationStatus, error)
 	UploadVideo(ctx context.Context, input models.UploadVideoInput) (*models.OperationStatus, error)
+	DeleteDocument(ctx context.Context, documentID string) (*models.OperationStatus, error)
+	CreatePDF(ctx context.Context, in models.CreatePDFInput) (*models.Document, error)
 }
 type QueryResolver interface {
 	ClassRooms(ctx context.Context, subjectID string) ([]*models.ClassRoom, error)
@@ -154,6 +163,7 @@ type QueryResolver interface {
 	Chapters(ctx context.Context, classRoomID string) ([]*models.Chapter, error)
 	Lessons(ctx context.Context, chapterID string) ([]*models.Lesson, error)
 	Documents(ctx context.Context, lessonID string) ([]*models.Document, error)
+	Document(ctx context.Context, documentID string) (*models.DocumentLink, error)
 	MyLessons(ctx context.Context, chapterID string) ([]*models.StudentLesson, error)
 	MyClassRooms(ctx context.Context, subjectID string) ([]*models.ClassRoom, error)
 }
@@ -366,6 +376,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Document.Title(childComplexity), true
 
+	case "DocumentLink.documentLink":
+		if e.complexity.DocumentLink.DocumentLink == nil {
+			break
+		}
+
+		return e.complexity.DocumentLink.DocumentLink(childComplexity), true
+
 	case "Duration.hours":
 		if e.complexity.Duration.Hours == nil {
 			break
@@ -460,6 +477,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateLesson(childComplexity, args["in"].(models.CreateLessonInput)), true
 
+	case "Mutation.createPdf":
+		if e.complexity.Mutation.CreatePDF == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createPdf_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreatePDF(childComplexity, args["in"].(models.CreatePDFInput)), true
+
 	case "Mutation.deleteChapter":
 		if e.complexity.Mutation.DeleteChapter == nil {
 			break
@@ -483,6 +512,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteClassRoom(childComplexity, args["in"].(models.IDRequest)), true
+
+	case "Mutation.deleteDocument":
+		if e.complexity.Mutation.DeleteDocument == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteDocument_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteDocument(childComplexity, args["documentID"].(string)), true
 
 	case "Mutation.deleteLesson":
 		if e.complexity.Mutation.DeleteLesson == nil {
@@ -587,6 +628,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.ClassRoomsTeacher(childComplexity, args["teacherID"].(string)), true
 
+	case "Query.document":
+		if e.complexity.Query.Document == nil {
+			break
+		}
+
+		args, err := ec.field_Query_document_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Document(childComplexity, args["documentID"].(string)), true
+
 	case "Query.documents":
 		if e.complexity.Query.Documents == nil {
 			break
@@ -680,6 +733,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputCreateChapterInput,
 		ec.unmarshalInputCreateLessonInput,
+		ec.unmarshalInputCreatePdfInput,
 		ec.unmarshalInputIdRequest,
 		ec.unmarshalInputUpdateChapterInput,
 		ec.unmarshalInputUpdateLessonInput,
@@ -831,6 +885,21 @@ func (ec *executionContext) field_Mutation_createLesson_args(ctx context.Context
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createPdf_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.CreatePDFInput
+	if tmp, ok := rawArgs["in"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("in"))
+		arg0, err = ec.unmarshalNCreatePdfInput2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐCreatePDFInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["in"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_deleteChapter_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -858,6 +927,21 @@ func (ec *executionContext) field_Mutation_deleteClassRoom_args(ctx context.Cont
 		}
 	}
 	args["in"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteDocument_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["documentID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("documentID"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["documentID"] = arg0
 	return args, nil
 }
 
@@ -993,6 +1077,21 @@ func (ec *executionContext) field_Query_classRooms_args(ctx context.Context, raw
 		}
 	}
 	args["subjectID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_document_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["documentID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("documentID"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["documentID"] = arg0
 	return args, nil
 }
 
@@ -2328,6 +2427,50 @@ func (ec *executionContext) fieldContext_Document_documentLink(ctx context.Conte
 	return fc, nil
 }
 
+func (ec *executionContext) _DocumentLink_documentLink(ctx context.Context, field graphql.CollectedField, obj *models.DocumentLink) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_DocumentLink_documentLink(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DocumentLink, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_DocumentLink_documentLink(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "DocumentLink",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Duration_hours(ctx context.Context, field graphql.CollectedField, obj *models.Duration) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Duration_hours(ctx, field)
 	if err != nil {
@@ -3294,6 +3437,140 @@ func (ec *executionContext) fieldContext_Mutation_uploadVideo(ctx context.Contex
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_deleteDocument(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_deleteDocument(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteDocument(rctx, fc.Args["documentID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.OperationStatus)
+	fc.Result = res
+	return ec.marshalNOperationStatus2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐOperationStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_deleteDocument(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "succeeded":
+				return ec.fieldContext_OperationStatus_succeeded(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type OperationStatus", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_deleteDocument_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createPdf(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createPdf(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreatePDF(rctx, fc.Args["in"].(models.CreatePDFInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.Document)
+	fc.Result = res
+	return ec.marshalNDocument2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐDocument(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createPdf(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "documentID":
+				return ec.fieldContext_Document_documentID(ctx, field)
+			case "documentType":
+				return ec.fieldContext_Document_documentType(ctx, field)
+			case "title":
+				return ec.fieldContext_Document_title(ctx, field)
+			case "arabicTitle":
+				return ec.fieldContext_Document_arabicTitle(ctx, field)
+			case "description":
+				return ec.fieldContext_Document_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_Document_arabicDescription(ctx, field)
+			case "duration":
+				return ec.fieldContext_Document_duration(ctx, field)
+			case "lectureNumber":
+				return ec.fieldContext_Document_lectureNumber(ctx, field)
+			case "documentLink":
+				return ec.fieldContext_Document_documentLink(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Document", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createPdf_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _OperationStatus_succeeded(ctx context.Context, field graphql.CollectedField, obj *models.OperationStatus) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_OperationStatus_succeeded(ctx, field)
 	if err != nil {
@@ -3788,6 +4065,65 @@ func (ec *executionContext) fieldContext_Query_documents(ctx context.Context, fi
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_documents_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_document(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_document(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Document(rctx, fc.Args["documentID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.DocumentLink)
+	fc.Result = res
+	return ec.marshalNDocumentLink2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐDocumentLink(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_document(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "documentLink":
+				return ec.fieldContext_DocumentLink_documentLink(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type DocumentLink", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_document_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -6168,6 +6504,82 @@ func (ec *executionContext) unmarshalInputCreateLessonInput(ctx context.Context,
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCreatePdfInput(ctx context.Context, obj interface{}) (models.CreatePDFInput, error) {
+	var it models.CreatePDFInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"userID", "lessonID", "title", "arabicTitle", "description", "arabicDescription", "lectureNumber", "url"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "userID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.UserID = data
+		case "lessonID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lessonID"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.LessonID = data
+		case "title":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Title = data
+		case "arabicTitle":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("arabicTitle"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ArabicTitle = data
+		case "description":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Description = data
+		case "arabicDescription":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("arabicDescription"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ArabicDescription = data
+		case "lectureNumber":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lectureNumber"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.LectureNumber = data
+		case "url":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("url"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.URL = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputIdRequest(ctx context.Context, obj interface{}) (models.IDRequest, error) {
 	var it models.IDRequest
 	asMap := map[string]interface{}{}
@@ -6577,6 +6989,45 @@ func (ec *executionContext) _Document(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
+var documentLinkImplementors = []string{"DocumentLink"}
+
+func (ec *executionContext) _DocumentLink(ctx context.Context, sel ast.SelectionSet, obj *models.DocumentLink) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, documentLinkImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DocumentLink")
+		case "documentLink":
+			out.Values[i] = ec._DocumentLink_documentLink(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var durationImplementors = []string{"Duration"}
 
 func (ec *executionContext) _Duration(ctx context.Context, sel ast.SelectionSet, obj *models.Duration) graphql.Marshaler {
@@ -6764,6 +7215,20 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_uploadVideo(ctx, field)
 			})
+		case "deleteDocument":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_deleteDocument(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createPdf":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createPdf(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6965,6 +7430,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_documents(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "document":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_document(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -7612,6 +8099,15 @@ func (ec *executionContext) unmarshalNCreateLessonInput2githubᚗcomᚋlesᚑcou
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreatePdfInput2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐCreatePDFInput(ctx context.Context, v interface{}) (models.CreatePDFInput, error) {
+	res, err := ec.unmarshalInputCreatePdfInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDocument2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐDocument(ctx context.Context, sel ast.SelectionSet, v models.Document) graphql.Marshaler {
+	return ec._Document(ctx, sel, &v)
+}
+
 func (ec *executionContext) marshalNDocument2ᚕᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐDocumentᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Document) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -7664,6 +8160,20 @@ func (ec *executionContext) marshalNDocument2ᚖgithubᚗcomᚋlesᚑcoursᚋlea
 		return graphql.Null
 	}
 	return ec._Document(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNDocumentLink2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐDocumentLink(ctx context.Context, sel ast.SelectionSet, v models.DocumentLink) graphql.Marshaler {
+	return ec._DocumentLink(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDocumentLink2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐDocumentLink(ctx context.Context, sel ast.SelectionSet, v *models.DocumentLink) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._DocumentLink(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNDuration2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐDuration(ctx context.Context, sel ast.SelectionSet, v *models.Duration) graphql.Marshaler {
