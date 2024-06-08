@@ -10,6 +10,10 @@ import (
 
 func (r *queryResolver) ClassRooms(ctx context.Context, subjectID string) ([]*models.ClassRoom, error) {
 
+	_, err := permisions.User(ctx)
+	if err != nil {
+		return nil, err
+	}
 	res, err := r.LearningClient.GetClassRooms(ctx, &learning.IDRequest{
 		Id: subjectID,
 	})
@@ -21,9 +25,12 @@ func (r *queryResolver) ClassRooms(ctx context.Context, subjectID string) ([]*mo
 
 func (r *queryResolver) ClassRoomsTeacher(ctx context.Context, teacherID string) ([]*models.ClassRoom, error) {
 
-	_, err := permisions.CanRead(ctx)
+	user, err := permisions.Admin(ctx)
 	if err != nil {
 		return nil, err
+	}
+	if !permisions.CanRead(user) {
+		return nil, permisions.ErrPermissionDenied
 	}
 
 	res, err := r.LearningClient.GetClassRoomsByTeacher(ctx, &learning.IDRequest{
@@ -38,7 +45,7 @@ func (r *queryResolver) ClassRoomsTeacher(ctx context.Context, teacherID string)
 
 func (r *queryResolver) MyClassRoomsTeacher(ctx context.Context) ([]*models.ClassRoom, error) {
 
-	user, err := permisions.CanRead(ctx)
+	user, err := permisions.Teacher(ctx)
 	if err != nil {
 		return nil, err
 	}
