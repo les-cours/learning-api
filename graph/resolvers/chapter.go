@@ -6,15 +6,13 @@ import (
 	"github.com/les-cours/learning-api/graph/models"
 	gprcToGraph "github.com/les-cours/learning-api/grpcToGraph"
 	"github.com/les-cours/learning-api/permisions"
-	"log"
 )
 
 func (r *mutationResolver) CreateChapter(ctx context.Context, in models.CreateChapterInput) (*models.Chapter, error) {
 
-	user, err := permisions.CanCreate(ctx)
-	log.Println(err)
+	user, err := permisions.Teacher(ctx)
 	if err != nil {
-		return nil, ErrApi(err)
+		return nil, err
 	}
 
 	chapter, err := r.LearningClient.CreateChapter(ctx, &learning.CreateChapterRequest{
@@ -50,14 +48,14 @@ func (r *queryResolver) Chapters(ctx context.Context, classRoomID string) ([]*mo
 
 func (r *mutationResolver) UpdateChapter(ctx context.Context, in models.UpdateChapterInput) (*models.Chapter, error) {
 
-	_, err := permisions.CanUpdate(ctx)
+	user, err := permisions.Teacher(ctx)
 	if err != nil {
-		return nil, ErrApi(err)
+		return nil, err
 	}
 
 	_, err = r.LearningClient.UpdateChapter(ctx, &learning.UpdateChapterRequest{
-		ChapterID: in.ChapterID,
-		//UserID:  user.Id   ,
+		ChapterID:   in.ChapterID,
+		UserID:      user.ID,
 		Title:       in.Title,
 		ArabicTitle: in.ArabicTitle,
 		Description: in.Description,
@@ -76,9 +74,9 @@ func (r *mutationResolver) UpdateChapter(ctx context.Context, in models.UpdateCh
 
 func (r *mutationResolver) DeleteChapter(ctx context.Context, in models.IDRequest) (*models.OperationStatus, error) {
 
-	user, err := permisions.CanDelete(ctx)
+	user, err := permisions.Teacher(ctx)
 	if err != nil {
-		return nil, ErrApi(err)
+		return nil, err
 	}
 
 	_, err = r.LearningClient.DeleteChapter(ctx, &learning.IDRequest{

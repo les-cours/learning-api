@@ -63,7 +63,7 @@ func (r *queryResolver) ClassRoom(ctx context.Context, ClassRoomID string) (*mod
 
 	user, err := permisions.Student(ctx)
 	if err != nil {
-		user, err = permisions.CanRead(ctx)
+		user, err = permisions.Teacher(ctx)
 		if err != nil {
 			return nil, err
 		}

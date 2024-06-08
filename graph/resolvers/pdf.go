@@ -10,7 +10,7 @@ import (
 
 func (r *mutationResolver) CreatePDF(ctx context.Context, in models.CreatePDFInput) (*models.Document, error) {
 
-	user, err2 := permisions.CanCreate(ctx)
+	user, err2 := permisions.Teacher(ctx)
 	if err2 != nil {
 		return nil, err2
 	}

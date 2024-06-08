@@ -48,7 +48,7 @@ func (r *queryResolver) Document(ctx context.Context, documentID string) (*model
 
 func (r *mutationResolver) DeleteDocument(ctx context.Context, documentID string) (*models.OperationStatus, error) {
 
-	_, err := permisions.CanDelete(ctx)
+	_, err := permisions.Teacher(ctx)
 	if err != nil {
 		return nil, err
 	}
