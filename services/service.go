@@ -46,6 +46,7 @@ func getUser(h http.Handler) http.Handler {
 		accountID := r.Header.Get("Accountid")
 		id := r.Header.Get("Id")
 		email := r.Header.Get("Email")
+		userType := r.Header.Get("Role")
 
 		json.Unmarshal([]byte(r.Header.Get("Create")), &user.Create)
 		json.Unmarshal([]byte(r.Header.Get("Read")), &user.Read)
@@ -54,6 +55,7 @@ func getUser(h http.Handler) http.Handler {
 		user.AccountID = accountID
 		user.ID = id
 		user.Email = email
+		user.UserType = userType
 
 		ctx := context.WithValue(r.Context(), "responseWriter", w)
 		ctx = context.WithValue(ctx, "user", &user)

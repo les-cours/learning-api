@@ -12,5 +12,9 @@ func Student(ctx context.Context) (*types.UserToken, error) {
 		return nil, ErrAuth
 	}
 
+	if user.UserType != "student" {
+		return nil, ErrPermissionDenied
+	}
+
 	return user, nil
 }

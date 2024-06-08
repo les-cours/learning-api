@@ -6,7 +6,6 @@ import (
 	"github.com/les-cours/learning-api/graph/models"
 	gprcToGraph "github.com/les-cours/learning-api/grpcToGraph"
 	"github.com/les-cours/learning-api/permisions"
-	"log"
 )
 
 func (r *queryResolver) ClassRooms(ctx context.Context, subjectID string) ([]*models.ClassRoom, error) {
@@ -54,9 +53,18 @@ func (r *queryResolver) MyClassRoomsTeacher(ctx context.Context) ([]*models.Clas
 }
 
 func (r *queryResolver) ClassRoom(ctx context.Context, ClassRoomID string) (*models.ClassRoom, error) {
-	log.Println("ClassRoom Started ....")
+
+	user, err := permisions.Student(ctx)
+	if err != nil {
+		user, err = permisions.CanRead(ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	ClassRoom, err := r.LearningClient.GetClassRoom(ctx, &learning.IDRequest{
-		Id: ClassRoomID,
+		Id:     ClassRoomID,
+		UserID: user.ID,
 	})
 	if err != nil {
 		return nil, ErrApi(err)
