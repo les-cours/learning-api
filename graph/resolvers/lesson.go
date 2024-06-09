@@ -36,18 +36,13 @@ func (r *mutationResolver) CreateLesson(ctx context.Context, in models.CreateLes
 
 func (r *queryResolver) Lessons(ctx context.Context, chapterID string) ([]*models.Lesson, error) {
 
-	//get user
-	//var user *types.UserToken
-	//if user, _ = ctx.Value("user").(*types.UserToken); user == nil {
-	//	return nil, ErrPermissionDenied
-	//}
-	//
-	//if !user.Read.LEARNING {
-	//	return nil, ErrPermissionDenied
-	//}
-
+	user, err := permisions.Teacher(ctx)
+	if err != nil {
+		return nil, err
+	}
 	res, err := r.LearningClient.GetLessonsByChapter(ctx, &learning.IDRequest{
-		Id: chapterID,
+		Id:     chapterID,
+		UserID: user.ID,
 	})
 	if err != nil {
 		return nil, ErrApi(err)
