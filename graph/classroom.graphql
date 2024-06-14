@@ -13,6 +13,16 @@ type ClassRoom {
     chapters: [Chapter!]!
 }
 
+input UpdateClassRoomInput {
+    classRoomID: String!
+    title: String!
+    image: String!
+    price: Int!
+    arabicTitle: String!
+    description: String!
+    arabicDescription: String!
+}
+
 type Teacher {
     teacherID: String!
     firstname: String!

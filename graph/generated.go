@@ -112,6 +112,7 @@ type ComplexityRoot struct {
 		DeleteDocument  func(childComplexity int, documentID string) int
 		DeleteLesson    func(childComplexity int, in models.IDRequest) int
 		UpdateChapter   func(childComplexity int, in models.UpdateChapterInput) int
+		UpdateClassRoom func(childComplexity int, in models.UpdateClassRoomInput) int
 		UpdateLesson    func(childComplexity int, in models.UpdateLessonInput) int
 		UploadVideo     func(childComplexity int, input models.UploadVideoInput) int
 	}
@@ -147,6 +148,7 @@ type MutationResolver interface {
 	UpdateLesson(ctx context.Context, in models.UpdateLessonInput) (*models.Lesson, error)
 	DeleteLesson(ctx context.Context, in models.IDRequest) (*models.OperationStatus, error)
 	DeleteClassRoom(ctx context.Context, in models.IDRequest) (*models.OperationStatus, error)
+	UpdateClassRoom(ctx context.Context, in models.UpdateClassRoomInput) (*models.ClassRoom, error)
 	UploadVideo(ctx context.Context, input models.UploadVideoInput) (*models.OperationStatus, error)
 	DeleteDocument(ctx context.Context, documentID string) (*models.OperationStatus, error)
 	CreatePDF(ctx context.Context, in models.CreatePDFInput) (*models.Document, error)
@@ -544,6 +546,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateChapter(childComplexity, args["in"].(models.UpdateChapterInput)), true
 
+	case "Mutation.updateClassRoom":
+		if e.complexity.Mutation.UpdateClassRoom == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateClassRoom_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateClassRoom(childComplexity, args["in"].(models.UpdateClassRoomInput)), true
+
 	case "Mutation.updateLesson":
 		if e.complexity.Mutation.UpdateLesson == nil {
 			break
@@ -712,6 +726,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputCreatePdfInput,
 		ec.unmarshalInputIdRequest,
 		ec.unmarshalInputUpdateChapterInput,
+		ec.unmarshalInputUpdateClassRoomInput,
 		ec.unmarshalInputUpdateLessonInput,
 		ec.unmarshalInputUploadVideoInput,
 	)
@@ -943,6 +958,21 @@ func (ec *executionContext) field_Mutation_updateChapter_args(ctx context.Contex
 	if tmp, ok := rawArgs["in"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("in"))
 		arg0, err = ec.unmarshalNUpdateChapterInput2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐUpdateChapterInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["in"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateClassRoom_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.UpdateClassRoomInput
+	if tmp, ok := rawArgs["in"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("in"))
+		arg0, err = ec.unmarshalNUpdateClassRoomInput2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐUpdateClassRoomInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3336,6 +3366,87 @@ func (ec *executionContext) fieldContext_Mutation_deleteClassRoom(ctx context.Co
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_deleteClassRoom_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_updateClassRoom(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_updateClassRoom(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateClassRoom(rctx, fc.Args["in"].(models.UpdateClassRoomInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.ClassRoom)
+	fc.Result = res
+	return ec.marshalNClassRoom2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐClassRoom(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_updateClassRoom(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "classRoomID":
+				return ec.fieldContext_ClassRoom_classRoomID(ctx, field)
+			case "title":
+				return ec.fieldContext_ClassRoom_title(ctx, field)
+			case "image":
+				return ec.fieldContext_ClassRoom_image(ctx, field)
+			case "price":
+				return ec.fieldContext_ClassRoom_price(ctx, field)
+			case "badge":
+				return ec.fieldContext_ClassRoom_badge(ctx, field)
+			case "studentCount":
+				return ec.fieldContext_ClassRoom_studentCount(ctx, field)
+			case "rating":
+				return ec.fieldContext_ClassRoom_rating(ctx, field)
+			case "arabicTitle":
+				return ec.fieldContext_ClassRoom_arabicTitle(ctx, field)
+			case "description":
+				return ec.fieldContext_ClassRoom_description(ctx, field)
+			case "arabicDescription":
+				return ec.fieldContext_ClassRoom_arabicDescription(ctx, field)
+			case "teacher":
+				return ec.fieldContext_ClassRoom_teacher(ctx, field)
+			case "chapters":
+				return ec.fieldContext_ClassRoom_chapters(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type ClassRoom", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_updateClassRoom_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -6516,6 +6627,75 @@ func (ec *executionContext) unmarshalInputUpdateChapterInput(ctx context.Context
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateClassRoomInput(ctx context.Context, obj interface{}) (models.UpdateClassRoomInput, error) {
+	var it models.UpdateClassRoomInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"classRoomID", "title", "image", "price", "arabicTitle", "description", "arabicDescription"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "classRoomID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("classRoomID"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ClassRoomID = data
+		case "title":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("title"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Title = data
+		case "image":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Image = data
+		case "price":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("price"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Price = data
+		case "arabicTitle":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("arabicTitle"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ArabicTitle = data
+		case "description":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Description = data
+		case "arabicDescription":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("arabicDescription"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.ArabicDescription = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateLessonInput(ctx context.Context, obj interface{}) (models.UpdateLessonInput, error) {
 	var it models.UpdateLessonInput
 	asMap := map[string]interface{}{}
@@ -7072,6 +7252,13 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_deleteClassRoom(ctx, field)
 			})
+		case "updateClassRoom":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_updateClassRoom(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "uploadVideo":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_uploadVideo(ctx, field)
@@ -8137,6 +8324,11 @@ func (ec *executionContext) marshalNTeacher2ᚖgithubᚗcomᚋlesᚑcoursᚋlear
 
 func (ec *executionContext) unmarshalNUpdateChapterInput2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐUpdateChapterInput(ctx context.Context, v interface{}) (models.UpdateChapterInput, error) {
 	res, err := ec.unmarshalInputUpdateChapterInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateClassRoomInput2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐUpdateClassRoomInput(ctx context.Context, v interface{}) (models.UpdateClassRoomInput, error) {
+	res, err := ec.unmarshalInputUpdateClassRoomInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

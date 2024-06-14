@@ -113,6 +113,16 @@ type UpdateChapterInput struct {
 	Description string `json:"description"`
 }
 
+type UpdateClassRoomInput struct {
+	ClassRoomID       string `json:"classRoomID"`
+	Title             string `json:"title"`
+	Image             string `json:"image"`
+	Price             int    `json:"price"`
+	ArabicTitle       string `json:"arabicTitle"`
+	Description       string `json:"description"`
+	ArabicDescription string `json:"arabicDescription"`
+}
+
 type UpdateLessonInput struct {
 	LessonID    string `json:"lessonID"`
 	ChapterID   string `json:"chapterID"`

@@ -95,6 +95,29 @@ func (r *mutationResolver) DeleteClassRoom(ctx context.Context, in models.IDRequ
 	}, nil
 }
 
+func (r *mutationResolver) UpdateClassRoom(ctx context.Context, in models.UpdateClassRoomInput) (*models.ClassRoom, error) {
+
+	user, err := permisions.Teacher(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := r.LearningClient.UpdateClassRoom(ctx, &learning.UpdateClassRoomRequest{
+		TeacherID:         user.ID,
+		ClassRoomID:       in.ClassRoomID,
+		Title:             in.Title,
+		Image:             in.Image,
+		Price:             int32(in.Price),
+		ArabicTitle:       in.ArabicTitle,
+		Description:       in.Description,
+		ArabicDescription: in.ArabicDescription,
+	})
+	if err != nil {
+		return nil, ErrApi(err)
+	}
+	return gprcToGraph.ClassRoom(res), nil
+}
+
 /*
 STUDENTS
 */

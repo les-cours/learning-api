@@ -16,6 +16,7 @@ type Mutation {
 
 
     deleteClassRoom(in: IdRequest!): OperationStatus
+    updateClassRoom(in: UpdateClassRoomInput!):ClassRoom!
     uploadVideo(input: UploadVideoInput!): OperationStatus
 
 
