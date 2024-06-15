@@ -48,17 +48,35 @@ func (r *mutationResolver) CreateReply(ctx context.Context, in models.CreateRepl
 	return &models.OperationStatus{Succeeded: true}, nil
 }
 
-func (r *queryResolver) Comments(ctx context.Context, documentID string) ([]*models.Comment, error) {
+func (r *queryResolver) Comments(ctx context.Context, documentID string, replied bool) ([]*models.Comment, error) {
 
-	res, err := r.LearningClient.GetComments(ctx, &learning.IDRequest{
-		Id:     documentID,
-		UserID: "2b836dd5-760c-47b6-9f0a-ddf39293afca",
-	})
+	user, err := permisions.User(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return gprcToGraph.Comments(res), nil
+	var comments = new(learning.Comments)
+	if replied {
+		comments, err = r.LearningClient.GetRepliedComments(ctx, &learning.IDRequest{
+			Id:     documentID,
+			UserID: user.ID,
+		})
+		if err != nil {
+			return nil, ErrApi(err)
+		}
+
+	} else {
+		comments, err = r.LearningClient.GetComments(ctx, &learning.IDRequest{
+			Id:     documentID,
+			UserID: user.ID,
+		})
+	}
+
+	if err != nil {
+		return nil, ErrApi(err)
+	}
+
+	return gprcToGraph.Comments(comments), nil
 }
 
 //

@@ -138,7 +138,7 @@ type ComplexityRoot struct {
 		ClassRoom           func(childComplexity int, classRoomID string) int
 		ClassRooms          func(childComplexity int, subjectID string) int
 		ClassRoomsTeacher   func(childComplexity int, teacherID string) int
-		Comments            func(childComplexity int, documentID string) int
+		Comments            func(childComplexity int, documentID string, replied bool) int
 		Document            func(childComplexity int, documentID string) int
 		Documents           func(childComplexity int, lessonID string) int
 		Lessons             func(childComplexity int, chapterID string) int
@@ -177,7 +177,7 @@ type QueryResolver interface {
 	Lessons(ctx context.Context, chapterID string) ([]*models.Lesson, error)
 	Documents(ctx context.Context, lessonID string) ([]*models.Document, error)
 	Document(ctx context.Context, documentID string) (*models.DocumentLink, error)
-	Comments(ctx context.Context, documentID string) ([]*models.Comment, error)
+	Comments(ctx context.Context, documentID string, replied bool) ([]*models.Comment, error)
 	MyClassRooms(ctx context.Context, subjectID string) ([]*models.ClassRoom, error)
 }
 
@@ -736,7 +736,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Comments(childComplexity, args["documentID"].(string)), true
+		return e.complexity.Query.Comments(childComplexity, args["documentID"].(string), args["replied"].(bool)), true
 
 	case "Query.document":
 		if e.complexity.Query.Document == nil {
@@ -1231,6 +1231,15 @@ func (ec *executionContext) field_Query_comments_args(ctx context.Context, rawAr
 		}
 	}
 	args["documentID"] = arg0
+	var arg1 bool
+	if tmp, ok := rawArgs["replied"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("replied"))
+		arg1, err = ec.unmarshalNBoolean2bool(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["replied"] = arg1
 	return args, nil
 }
 
@@ -4868,7 +4877,7 @@ func (ec *executionContext) _Query_comments(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Comments(rctx, fc.Args["documentID"].(string))
+		return ec.resolvers.Query().Comments(rctx, fc.Args["documentID"].(string), fc.Args["replied"].(bool))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

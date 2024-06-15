@@ -42,7 +42,7 @@ type Query {
     documents(lessonID: String!): [Document!]!
     document(documentID: String!): DocumentLink!
 
-    comments(documentID: String!): [Comment!]!
+    comments(documentID: String!,replied: Boolean!): [Comment!]!
 
     myClassRooms(subjectID: String!): [ClassRoom!]!
 }
