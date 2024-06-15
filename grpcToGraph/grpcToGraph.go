@@ -75,6 +75,7 @@ func Lesson(lesson *learning.Lesson) *models.Lesson {
 		ArabicTitle:       lesson.ArabicTitle,
 		Description:       lesson.Description,
 		ArabicDescription: lesson.ArabicDescription,
+		Order:             int(lesson.LessonOrder),
 		Documents:         Documents(lesson.Documents),
 	}
 
@@ -117,6 +118,26 @@ func Documents(ds *learning.Documents) []*models.Document {
 
 	for _, d := range ds.Documents {
 		documents = append(documents, Document(d))
+	}
+	return documents
+}
+
+func Comment(c *learning.Comment) *models.Comment {
+	return &models.Comment{
+		RepliedTo:  c.RepliedTo,
+		Content:    c.Content,
+		DocumentID: c.DocumentID,
+		Timestamp:  int(c.Timestamp),
+		Edited:     c.Edited,
+		IsTeacher:  c.IsTeacher,
+	}
+
+}
+func Comments(ds *learning.Comments) []*models.Comment {
+	var documents = make([]*models.Comment, 0)
+
+	for _, d := range ds.Comments {
+		documents = append(documents, Comment(d))
 	}
 	return documents
 }

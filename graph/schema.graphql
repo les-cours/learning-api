@@ -24,6 +24,9 @@ type Mutation {
 
     createPdf(in: CreatePdfInput!):Document!
 
+    createComment(input: CreateCommentInput!): OperationStatus!
+    createReply(input: CreateReplyInput!): OperationStatus!
+
 }
 
 
@@ -38,6 +41,8 @@ type Query {
 
     documents(lessonID: String!): [Document!]!
     document(documentID: String!): DocumentLink!
+
+    comments(documentID: String!): [Comment!]!
 
     myClassRooms(subjectID: String!): [ClassRoom!]!
 }
@@ -55,5 +60,29 @@ type OperationStatus {
 input UploadVideoInput {
     lessonID: String!
     content: Upload!
+}
+
+
+type Comment {
+    repliedTo: String!        # ID of the comment being replied to (if any)
+    content: String!         # The actual comment text
+    documentID: String!      # ID of the post to which the comment belongs
+    timestamp: Int!       # Timestamp of when the comment was made (ISO 8601 format)
+    edited: Boolean!         # Whether the comment has been edited
+    isTeacher: Boolean!      # Whether the user is a teacher
+}
+
+input CreateCommentInput {
+    content: String!         # The actual comment text
+    documentID: String!      # ID of the post to which the comment is being added
+    isTeacher: Boolean!      # Whether the user is a teacher
+}
+
+
+input CreateReplyInput {
+    content: String!         # The actual comment text
+    documentID: String!      # ID of the post to which the comment is being added
+    repliedTo: String!        # ID of the comment being replied to (optional)
+    isTeacher: Boolean!      # Whether the user is a teacher
 }
 

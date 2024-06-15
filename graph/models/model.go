@@ -30,11 +30,26 @@ type ClassRoom struct {
 	Chapters          []*Chapter `json:"chapters"`
 }
 
+type Comment struct {
+	RepliedTo  string `json:"repliedTo"`
+	Content    string `json:"content"`
+	DocumentID string `json:"documentID"`
+	Timestamp  int    `json:"timestamp"`
+	Edited     bool   `json:"edited"`
+	IsTeacher  bool   `json:"isTeacher"`
+}
+
 type CreateChapterInput struct {
 	ClassRoomID string `json:"classRoomID"`
 	Title       string `json:"title"`
 	ArabicTitle string `json:"arabicTitle"`
 	Description string `json:"description"`
+}
+
+type CreateCommentInput struct {
+	Content    string `json:"content"`
+	DocumentID string `json:"documentID"`
+	IsTeacher  bool   `json:"isTeacher"`
 }
 
 type CreateLessonInput struct {
@@ -52,6 +67,13 @@ type CreatePDFInput struct {
 	ArabicDescription string `json:"arabicDescription"`
 	LectureNumber     int    `json:"lectureNumber"`
 	URL               string `json:"url"`
+}
+
+type CreateReplyInput struct {
+	Content    string `json:"content"`
+	DocumentID string `json:"documentID"`
+	RepliedTo  string `json:"repliedTo"`
+	IsTeacher  bool   `json:"isTeacher"`
 }
 
 type Document struct {
@@ -87,6 +109,7 @@ type Lesson struct {
 	ArabicTitle       string      `json:"arabicTitle"`
 	Description       string      `json:"description"`
 	ArabicDescription string      `json:"arabicDescription"`
+	Order             int         `json:"order"`
 	Documents         []*Document `json:"documents"`
 }
 

@@ -45,6 +45,7 @@ type Lesson {
     arabicTitle:String!
     description: String!
     arabicDescription: String!
+    order: Int!
     documents: [Document!]!
 }
 

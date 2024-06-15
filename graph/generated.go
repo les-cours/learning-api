@@ -71,6 +71,15 @@ type ComplexityRoot struct {
 		Title             func(childComplexity int) int
 	}
 
+	Comment struct {
+		Content    func(childComplexity int) int
+		DocumentID func(childComplexity int) int
+		Edited     func(childComplexity int) int
+		IsTeacher  func(childComplexity int) int
+		RepliedTo  func(childComplexity int) int
+		Timestamp  func(childComplexity int) int
+	}
+
 	Document struct {
 		ArabicDescription func(childComplexity int) int
 		ArabicTitle       func(childComplexity int) int
@@ -100,13 +109,16 @@ type ComplexityRoot struct {
 		Description       func(childComplexity int) int
 		Documents         func(childComplexity int) int
 		LessonID          func(childComplexity int) int
+		Order             func(childComplexity int) int
 		Title             func(childComplexity int) int
 	}
 
 	Mutation struct {
 		CreateChapter   func(childComplexity int, in models.CreateChapterInput) int
+		CreateComment   func(childComplexity int, input models.CreateCommentInput) int
 		CreateLesson    func(childComplexity int, in models.CreateLessonInput) int
 		CreatePDF       func(childComplexity int, in models.CreatePDFInput) int
+		CreateReply     func(childComplexity int, input models.CreateReplyInput) int
 		DeleteChapter   func(childComplexity int, in models.IDRequest) int
 		DeleteClassRoom func(childComplexity int, in models.IDRequest) int
 		DeleteDocument  func(childComplexity int, documentID string) int
@@ -126,6 +138,7 @@ type ComplexityRoot struct {
 		ClassRoom           func(childComplexity int, classRoomID string) int
 		ClassRooms          func(childComplexity int, subjectID string) int
 		ClassRoomsTeacher   func(childComplexity int, teacherID string) int
+		Comments            func(childComplexity int, documentID string) int
 		Document            func(childComplexity int, documentID string) int
 		Documents           func(childComplexity int, lessonID string) int
 		Lessons             func(childComplexity int, chapterID string) int
@@ -152,6 +165,8 @@ type MutationResolver interface {
 	UploadVideo(ctx context.Context, input models.UploadVideoInput) (*models.OperationStatus, error)
 	DeleteDocument(ctx context.Context, documentID string) (*models.OperationStatus, error)
 	CreatePDF(ctx context.Context, in models.CreatePDFInput) (*models.Document, error)
+	CreateComment(ctx context.Context, input models.CreateCommentInput) (*models.OperationStatus, error)
+	CreateReply(ctx context.Context, input models.CreateReplyInput) (*models.OperationStatus, error)
 }
 type QueryResolver interface {
 	ClassRooms(ctx context.Context, subjectID string) ([]*models.ClassRoom, error)
@@ -162,6 +177,7 @@ type QueryResolver interface {
 	Lessons(ctx context.Context, chapterID string) ([]*models.Lesson, error)
 	Documents(ctx context.Context, lessonID string) ([]*models.Document, error)
 	Document(ctx context.Context, documentID string) (*models.DocumentLink, error)
+	Comments(ctx context.Context, documentID string) ([]*models.Comment, error)
 	MyClassRooms(ctx context.Context, subjectID string) ([]*models.ClassRoom, error)
 }
 
@@ -310,6 +326,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ClassRoom.Title(childComplexity), true
 
+	case "Comment.content":
+		if e.complexity.Comment.Content == nil {
+			break
+		}
+
+		return e.complexity.Comment.Content(childComplexity), true
+
+	case "Comment.documentID":
+		if e.complexity.Comment.DocumentID == nil {
+			break
+		}
+
+		return e.complexity.Comment.DocumentID(childComplexity), true
+
+	case "Comment.edited":
+		if e.complexity.Comment.Edited == nil {
+			break
+		}
+
+		return e.complexity.Comment.Edited(childComplexity), true
+
+	case "Comment.isTeacher":
+		if e.complexity.Comment.IsTeacher == nil {
+			break
+		}
+
+		return e.complexity.Comment.IsTeacher(childComplexity), true
+
+	case "Comment.repliedTo":
+		if e.complexity.Comment.RepliedTo == nil {
+			break
+		}
+
+		return e.complexity.Comment.RepliedTo(childComplexity), true
+
+	case "Comment.timestamp":
+		if e.complexity.Comment.Timestamp == nil {
+			break
+		}
+
+		return e.complexity.Comment.Timestamp(childComplexity), true
+
 	case "Document.arabicDescription":
 		if e.complexity.Document.ArabicDescription == nil {
 			break
@@ -443,6 +501,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Lesson.LessonID(childComplexity), true
 
+	case "Lesson.order":
+		if e.complexity.Lesson.Order == nil {
+			break
+		}
+
+		return e.complexity.Lesson.Order(childComplexity), true
+
 	case "Lesson.title":
 		if e.complexity.Lesson.Title == nil {
 			break
@@ -461,6 +526,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateChapter(childComplexity, args["in"].(models.CreateChapterInput)), true
+
+	case "Mutation.createComment":
+		if e.complexity.Mutation.CreateComment == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createComment_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateComment(childComplexity, args["input"].(models.CreateCommentInput)), true
 
 	case "Mutation.createLesson":
 		if e.complexity.Mutation.CreateLesson == nil {
@@ -485,6 +562,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreatePDF(childComplexity, args["in"].(models.CreatePDFInput)), true
+
+	case "Mutation.createReply":
+		if e.complexity.Mutation.CreateReply == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createReply_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateReply(childComplexity, args["input"].(models.CreateReplyInput)), true
 
 	case "Mutation.deleteChapter":
 		if e.complexity.Mutation.DeleteChapter == nil {
@@ -637,6 +726,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.ClassRoomsTeacher(childComplexity, args["teacherID"].(string)), true
 
+	case "Query.comments":
+		if e.complexity.Query.Comments == nil {
+			break
+		}
+
+		args, err := ec.field_Query_comments_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Comments(childComplexity, args["documentID"].(string)), true
+
 	case "Query.document":
 		if e.complexity.Query.Document == nil {
 			break
@@ -722,8 +823,10 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
 		ec.unmarshalInputCreateChapterInput,
+		ec.unmarshalInputCreateCommentInput,
 		ec.unmarshalInputCreateLessonInput,
 		ec.unmarshalInputCreatePdfInput,
+		ec.unmarshalInputCreateReplyInput,
 		ec.unmarshalInputIdRequest,
 		ec.unmarshalInputUpdateChapterInput,
 		ec.unmarshalInputUpdateClassRoomInput,
@@ -861,6 +964,21 @@ func (ec *executionContext) field_Mutation_createChapter_args(ctx context.Contex
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createComment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.CreateCommentInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateCommentInput2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐCreateCommentInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createLesson_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -888,6 +1006,21 @@ func (ec *executionContext) field_Mutation_createPdf_args(ctx context.Context, r
 		}
 	}
 	args["in"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createReply_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 models.CreateReplyInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateReplyInput2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐCreateReplyInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -1083,6 +1216,21 @@ func (ec *executionContext) field_Query_classRooms_args(ctx context.Context, raw
 		}
 	}
 	args["subjectID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_comments_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["documentID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("documentID"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["documentID"] = arg0
 	return args, nil
 }
 
@@ -1453,6 +1601,8 @@ func (ec *executionContext) fieldContext_Chapter_lessons(ctx context.Context, fi
 				return ec.fieldContext_Lesson_description(ctx, field)
 			case "arabicDescription":
 				return ec.fieldContext_Lesson_arabicDescription(ctx, field)
+			case "order":
+				return ec.fieldContext_Lesson_order(ctx, field)
 			case "documents":
 				return ec.fieldContext_Lesson_documents(ctx, field)
 			}
@@ -2007,6 +2157,270 @@ func (ec *executionContext) fieldContext_ClassRoom_chapters(ctx context.Context,
 				return ec.fieldContext_Chapter_lessons(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Chapter", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Comment_repliedTo(ctx context.Context, field graphql.CollectedField, obj *models.Comment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Comment_repliedTo(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RepliedTo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Comment_repliedTo(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Comment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Comment_content(ctx context.Context, field graphql.CollectedField, obj *models.Comment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Comment_content(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Content, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Comment_content(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Comment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Comment_documentID(ctx context.Context, field graphql.CollectedField, obj *models.Comment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Comment_documentID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DocumentID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Comment_documentID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Comment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Comment_timestamp(ctx context.Context, field graphql.CollectedField, obj *models.Comment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Comment_timestamp(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Timestamp, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Comment_timestamp(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Comment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Comment_edited(ctx context.Context, field graphql.CollectedField, obj *models.Comment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Comment_edited(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edited, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Comment_edited(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Comment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Comment_isTeacher(ctx context.Context, field graphql.CollectedField, obj *models.Comment) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Comment_isTeacher(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.IsTeacher, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Comment_isTeacher(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Comment",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -2858,6 +3272,50 @@ func (ec *executionContext) fieldContext_Lesson_arabicDescription(ctx context.Co
 	return fc, nil
 }
 
+func (ec *executionContext) _Lesson_order(ctx context.Context, field graphql.CollectedField, obj *models.Lesson) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Lesson_order(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Order, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Lesson_order(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Lesson",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Lesson_documents(ctx context.Context, field graphql.CollectedField, obj *models.Lesson) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Lesson_documents(ctx, field)
 	if err != nil {
@@ -3168,6 +3626,8 @@ func (ec *executionContext) fieldContext_Mutation_createLesson(ctx context.Conte
 				return ec.fieldContext_Lesson_description(ctx, field)
 			case "arabicDescription":
 				return ec.fieldContext_Lesson_arabicDescription(ctx, field)
+			case "order":
+				return ec.fieldContext_Lesson_order(ctx, field)
 			case "documents":
 				return ec.fieldContext_Lesson_documents(ctx, field)
 			}
@@ -3237,6 +3697,8 @@ func (ec *executionContext) fieldContext_Mutation_updateLesson(ctx context.Conte
 				return ec.fieldContext_Lesson_description(ctx, field)
 			case "arabicDescription":
 				return ec.fieldContext_Lesson_arabicDescription(ctx, field)
+			case "order":
+				return ec.fieldContext_Lesson_order(ctx, field)
 			case "documents":
 				return ec.fieldContext_Lesson_documents(ctx, field)
 			}
@@ -3637,6 +4099,124 @@ func (ec *executionContext) fieldContext_Mutation_createPdf(ctx context.Context,
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_createPdf_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createComment(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createComment(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateComment(rctx, fc.Args["input"].(models.CreateCommentInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.OperationStatus)
+	fc.Result = res
+	return ec.marshalNOperationStatus2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐOperationStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createComment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "succeeded":
+				return ec.fieldContext_OperationStatus_succeeded(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type OperationStatus", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createComment_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createReply(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createReply(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateReply(rctx, fc.Args["input"].(models.CreateReplyInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.OperationStatus)
+	fc.Result = res
+	return ec.marshalNOperationStatus2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐOperationStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createReply(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "succeeded":
+				return ec.fieldContext_OperationStatus_succeeded(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type OperationStatus", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createReply_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -4118,6 +4698,8 @@ func (ec *executionContext) fieldContext_Query_lessons(ctx context.Context, fiel
 				return ec.fieldContext_Lesson_description(ctx, field)
 			case "arabicDescription":
 				return ec.fieldContext_Lesson_arabicDescription(ctx, field)
+			case "order":
+				return ec.fieldContext_Lesson_order(ctx, field)
 			case "documents":
 				return ec.fieldContext_Lesson_documents(ctx, field)
 			}
@@ -4266,6 +4848,75 @@ func (ec *executionContext) fieldContext_Query_document(ctx context.Context, fie
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Query_document_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_comments(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_comments(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Comments(rctx, fc.Args["documentID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Comment)
+	fc.Result = res
+	return ec.marshalNComment2ᚕᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐCommentᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_comments(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "repliedTo":
+				return ec.fieldContext_Comment_repliedTo(ctx, field)
+			case "content":
+				return ec.fieldContext_Comment_content(ctx, field)
+			case "documentID":
+				return ec.fieldContext_Comment_documentID(ctx, field)
+			case "timestamp":
+				return ec.fieldContext_Comment_timestamp(ctx, field)
+			case "edited":
+				return ec.fieldContext_Comment_edited(ctx, field)
+			case "isTeacher":
+				return ec.fieldContext_Comment_isTeacher(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Comment", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_comments_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return fc, err
 	}
@@ -6435,6 +7086,47 @@ func (ec *executionContext) unmarshalInputCreateChapterInput(ctx context.Context
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCreateCommentInput(ctx context.Context, obj interface{}) (models.CreateCommentInput, error) {
+	var it models.CreateCommentInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"content", "documentID", "isTeacher"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "content":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("content"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Content = data
+		case "documentID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("documentID"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DocumentID = data
+		case "isTeacher":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isTeacher"))
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsTeacher = data
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateLessonInput(ctx context.Context, obj interface{}) (models.CreateLessonInput, error) {
 	var it models.CreateLessonInput
 	asMap := map[string]interface{}{}
@@ -6546,6 +7238,54 @@ func (ec *executionContext) unmarshalInputCreatePdfInput(ctx context.Context, ob
 				return it, err
 			}
 			it.URL = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateReplyInput(ctx context.Context, obj interface{}) (models.CreateReplyInput, error) {
+	var it models.CreateReplyInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"content", "documentID", "repliedTo", "isTeacher"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "content":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("content"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Content = data
+		case "documentID":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("documentID"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.DocumentID = data
+		case "repliedTo":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("repliedTo"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.RepliedTo = data
+		case "isTeacher":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isTeacher"))
+			data, err := ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.IsTeacher = data
 		}
 	}
 
@@ -6951,6 +7691,70 @@ func (ec *executionContext) _ClassRoom(ctx context.Context, sel ast.SelectionSet
 	return out
 }
 
+var commentImplementors = []string{"Comment"}
+
+func (ec *executionContext) _Comment(ctx context.Context, sel ast.SelectionSet, obj *models.Comment) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, commentImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Comment")
+		case "repliedTo":
+			out.Values[i] = ec._Comment_repliedTo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "content":
+			out.Values[i] = ec._Comment_content(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "documentID":
+			out.Values[i] = ec._Comment_documentID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "timestamp":
+			out.Values[i] = ec._Comment_timestamp(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "edited":
+			out.Values[i] = ec._Comment_edited(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "isTeacher":
+			out.Values[i] = ec._Comment_isTeacher(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var documentImplementors = []string{"Document"}
 
 func (ec *executionContext) _Document(ctx context.Context, sel ast.SelectionSet, obj *models.Document) graphql.Marshaler {
@@ -7159,6 +7963,11 @@ func (ec *executionContext) _Lesson(ctx context.Context, sel ast.SelectionSet, o
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "order":
+			out.Values[i] = ec._Lesson_order(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
 		case "documents":
 			out.Values[i] = ec._Lesson_documents(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -7273,6 +8082,20 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		case "createPdf":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_createPdf(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createComment":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createComment(ctx, field)
+			})
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "createReply":
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createReply(ctx, field)
 			})
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
@@ -7522,6 +8345,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_document(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "comments":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_comments(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&fs.Invalids, 1)
 				}
@@ -8093,8 +8938,67 @@ func (ec *executionContext) marshalNClassRoom2ᚖgithubᚗcomᚋlesᚑcoursᚋle
 	return ec._ClassRoom(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNComment2ᚕᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐCommentᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Comment) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNComment2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐComment(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNComment2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐComment(ctx context.Context, sel ast.SelectionSet, v *models.Comment) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Comment(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNCreateChapterInput2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐCreateChapterInput(ctx context.Context, v interface{}) (models.CreateChapterInput, error) {
 	res, err := ec.unmarshalInputCreateChapterInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateCommentInput2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐCreateCommentInput(ctx context.Context, v interface{}) (models.CreateCommentInput, error) {
+	res, err := ec.unmarshalInputCreateCommentInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -8105,6 +9009,11 @@ func (ec *executionContext) unmarshalNCreateLessonInput2githubᚗcomᚋlesᚑcou
 
 func (ec *executionContext) unmarshalNCreatePdfInput2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐCreatePDFInput(ctx context.Context, v interface{}) (models.CreatePDFInput, error) {
 	res, err := ec.unmarshalInputCreatePdfInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateReplyInput2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐCreateReplyInput(ctx context.Context, v interface{}) (models.CreateReplyInput, error) {
+	res, err := ec.unmarshalInputCreateReplyInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
