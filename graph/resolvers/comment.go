@@ -39,7 +39,7 @@ func (r *mutationResolver) CreateReply(ctx context.Context, in models.CreateRepl
 		Content:    in.Content,
 		DocumentID: in.DocumentID,
 		RepliedTo:  in.RepliedTo,
-		IsTeacher:  false,
+		IsTeacher:  in.IsTeacher,
 	})
 
 	if err != nil {
