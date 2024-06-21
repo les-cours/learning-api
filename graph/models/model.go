@@ -31,6 +31,8 @@ type ClassRoom struct {
 }
 
 type Comment struct {
+	ID         string `json:"id"`
+	User       *User  `json:"user"`
 	RepliedTo  string `json:"repliedTo"`
 	Content    string `json:"content"`
 	DocumentID string `json:"documentID"`
@@ -157,4 +159,12 @@ type UpdateLessonInput struct {
 type UploadVideoInput struct {
 	LessonID string         `json:"lessonID"`
 	Content  graphql.Upload `json:"content"`
+}
+
+type User struct {
+	ID        string `json:"id"`
+	Username  string `json:"username"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Avatar    string `json:"avatar"`
 }

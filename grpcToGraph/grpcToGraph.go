@@ -124,6 +124,14 @@ func Documents(ds *learning.Documents) []*models.Document {
 
 func Comment(c *learning.Comment) *models.Comment {
 	return &models.Comment{
+		ID: c.Id,
+		User: &models.User{
+			ID:        c.User.Id,
+			Username:  c.User.Username,
+			FirstName: c.User.FirstName,
+			LastName:  c.User.LastName,
+			Avatar:    c.User.Avatar,
+		},
 		RepliedTo:  c.RepliedTo,
 		Content:    c.Content,
 		DocumentID: c.DocumentID,

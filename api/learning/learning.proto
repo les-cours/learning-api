@@ -199,20 +199,29 @@ message Documents{
 }
 
 message Comment {
-  string id = 1;                  // Unique identifier for the comment
-  string userID = 2;            // ID of the user who made the comment
+  string id = 1;
+  User user = 2;
   string repliedTo = 7;
-  string content = 3;           // The actual comment text
-  string documentID = 4;            // ID of the post to which the comment belongs
-  int64 timestamp = 5;          // Timestamp of when the comment was made
-  bool edited = 6;              // Whether the comment has been edited
+  string content = 3;
+  string documentID = 4;
+  int64 timestamp = 5;
+  bool edited = 6;
   bool isTeacher = 8;
+
+}
+
+message User {
+  string id = 1;
+  string username = 3;
+  string firstName = 4;
+  string lastName = 5;
+  string avatar = 6;
 }
 
 message CreateCommentRequest {
-  string userID = 1;            // ID of the user creating the comment
-  string content = 2;           // The actual comment text
-  string documentID = 3;            // ID of the post to which the comment is being added
+  string userID = 1;
+  string content = 2;
+  string documentID = 3;
   string repliedTo = 4;
   bool isTeacher = 5;
 }

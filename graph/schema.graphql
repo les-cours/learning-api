@@ -64,13 +64,26 @@ input UploadVideoInput {
 
 
 type Comment {
-    repliedTo: String!        # ID of the comment being replied to (if any)
-    content: String!         # The actual comment text
-    documentID: String!      # ID of the post to which the comment belongs
-    timestamp: Int!       # Timestamp of when the comment was made (ISO 8601 format)
-    edited: Boolean!         # Whether the comment has been edited
-    isTeacher: Boolean!      # Whether the user is a teacher
+    id: String!
+    user: User!
+    repliedTo: String!
+    content: String!
+    documentID: String!
+    timestamp: Int!
+    edited: Boolean!
+    isTeacher: Boolean!
 }
+
+type User {
+    id: String!
+    username: String!
+    firstName: String!
+    lastName: String!
+    avatar: String!
+}
+
+
+
 
 input CreateCommentInput {
     content: String!         # The actual comment text
