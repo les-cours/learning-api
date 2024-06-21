@@ -52,8 +52,7 @@ func (r *mutationResolver) CreateReply(ctx context.Context, in models.CreateRepl
 
 func (r *queryResolver) Comments(ctx context.Context, documentID string, replied bool) ([]*models.Comment, error) {
 
-	_, err := uuid.Parse(documentID)
-	if err != nil {
+	if uuid.Validate(documentID) != nil {
 		return nil, errors.New("wrong document")
 	}
 
