@@ -25,7 +25,7 @@ func (r *queryResolver) ClassRooms(ctx context.Context, subjectID string) ([]*mo
 
 func (r *queryResolver) ClassRoomsTeacher(ctx context.Context, teacherID string) ([]*models.ClassRoom, error) {
 
-	user, err := permisions.Admin(ctx)
+	user, err := permisions.Teacher(ctx)
 	if err != nil {
 		return nil, err
 	}
