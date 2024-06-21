@@ -19,7 +19,7 @@ func (r *mutationResolver) CreateComment(ctx context.Context, in models.CreateCo
 		UserID:     user.ID,
 		Content:    in.Content,
 		DocumentID: in.DocumentID,
-		IsTeacher:  false,
+		IsTeacher:  in.IsTeacher,
 	})
 
 	if err != nil {
