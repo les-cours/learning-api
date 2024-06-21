@@ -2,6 +2,8 @@ package resolvers
 
 import (
 	"context"
+	"errors"
+	"github.com/google/uuid"
 	"github.com/les-cours/learning-api/api/learning"
 	"github.com/les-cours/learning-api/graph/models"
 	gprcToGraph "github.com/les-cours/learning-api/grpcToGraph"
@@ -49,6 +51,11 @@ func (r *mutationResolver) CreateReply(ctx context.Context, in models.CreateRepl
 }
 
 func (r *queryResolver) Comments(ctx context.Context, documentID string, replied bool) ([]*models.Comment, error) {
+
+	_, err := uuid.Parse(documentID)
+	if err != nil {
+		return nil, errors.New("wrong document")
+	}
 
 	user, err := permisions.User(ctx)
 	if err != nil {
