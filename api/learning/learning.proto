@@ -199,13 +199,13 @@ message Documents{
 }
 
 message Comment {
-  string id = 1;
-  User user = 2;
+  string id = 1;                 // Unique identifier for the comment
+  User user = 2; // ID of the user who made the comment
   string repliedTo = 7;
-  string content = 3;
-  string documentID = 4;
-  int64 timestamp = 5;
-  bool edited = 6;
+  string content = 3;           // The actual comment text
+  string documentID = 4;            // ID of the post to which the comment belongs
+  int64 timestamp = 5;          // Timestamp of when the comment was made
+  bool edited = 6;              // Whether the comment has been edited
   bool isTeacher = 8;
 
 }
@@ -219,9 +219,9 @@ message User {
 }
 
 message CreateCommentRequest {
-  string userID = 1;
-  string content = 2;
-  string documentID = 3;
+  string userID = 1;            // ID of the user creating the comment
+  string content = 2;           // The actual comment text
+  string documentID = 3;            // ID of the post to which the comment is being added
   string repliedTo = 4;
   bool isTeacher = 5;
 }
@@ -229,6 +229,33 @@ message CreateCommentRequest {
 message Comments {
   repeated Comment comments = 1;
 }
+
+
+message Room {
+  string id = 1;
+  string name = 2;
+  User owner = 3;
+  repeated User users = 4;
+  repeated Message messages = 5;
+}
+
+// Message
+message Message {
+  string id = 1;
+  string room_id = 2;
+  string content = 3;
+  string timestamp = 4; //
+  bool  isTeacher = 5;
+  User user = 6;
+}
+
+message AddMessage {
+  string roomID = 2;
+  string content = 3;
+  string userID = 5;
+  bool isTeacher = 6;
+}
+
 
 service LearningService {
   rpc CreateClassRooms(CreateClassRoomsRequest)returns (OperationStatus){}
@@ -272,4 +299,11 @@ service LearningService {
   rpc GetComments(IDRequest)returns (Comments){}
   rpc GetRepliedComments(IDRequest)returns (Comments){}
 
+
+  /*
+  chat
+   */
+  rpc GetChatRoom(IDRequest)returns(Room){}
+  rpc AddMessageToChatRoom(AddMessage)returns(OperationStatus){}
+  rpc AddStudentToChatRoom(IDRequest)returns(OperationStatus){}
 }

@@ -149,3 +149,56 @@ func Comments(ds *learning.Comments) []*models.Comment {
 	}
 	return documents
 }
+
+func Room(room *learning.Room) *models.Room {
+	return &models.Room{
+		ID:   room.Id,
+		Name: room.Name,
+		Teacher: &models.UserRoom{
+			ID:        room.Owner.Id,
+			Username:  room.Owner.Username,
+			FirstName: room.Owner.FirstName,
+			LastName:  room.Owner.LastName,
+			Avatar:    room.Owner.Avatar,
+		},
+		Users:    Users(room.Users),
+		Messages: Messages(room.Messages),
+	}
+}
+
+func Messages(messages []*learning.Message) []*models.Message {
+	var grpcMessage = make([]*models.Message, len(messages))
+	for _, message := range messages {
+		grpcMessage = append(grpcMessage, Message(message))
+	}
+	return grpcMessage
+}
+
+func Message(message *learning.Message) *models.Message {
+	return &models.Message{
+		ID:        message.Id,
+		RoomID:    message.RoomId,
+		Message:   message.Content,
+		Timestamp: message.Timestamp,
+		IsTeacher: message.IsTeacher,
+		Owner:     User(message.User),
+	}
+}
+
+func Users(users []*learning.User) []*models.UserRoom {
+	var grpcUsers = make([]*models.UserRoom, len(users))
+	for _, user := range users {
+		grpcUsers = append(grpcUsers, User(user))
+	}
+	return grpcUsers
+}
+
+func User(user *learning.User) *models.UserRoom {
+	return &models.UserRoom{
+		ID:        user.Id,
+		Username:  user.Username,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Avatar:    user.Avatar,
+	}
+}

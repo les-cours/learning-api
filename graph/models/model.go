@@ -115,6 +115,22 @@ type Lesson struct {
 	Documents         []*Document `json:"documents"`
 }
 
+type Message struct {
+	ID        string    `json:"id"`
+	RoomID    string    `json:"roomID"`
+	Message   string    `json:"message"`
+	Timestamp string    `json:"timestamp"`
+	IsTeacher bool      `json:"isTeacher"`
+	Owner     *UserRoom `json:"owner"`
+}
+
+type MessageInput struct {
+	RoomID    string `json:"roomID"`
+	Message   string `json:"message"`
+	IsTeacher bool   `json:"isTeacher"`
+	OwnerID   string `json:"ownerID"`
+}
+
 type Mutation struct {
 }
 
@@ -123,6 +139,14 @@ type OperationStatus struct {
 }
 
 type Query struct {
+}
+
+type Room struct {
+	ID       string      `json:"id"`
+	Name     string      `json:"name"`
+	Teacher  *UserRoom   `json:"teacher"`
+	Users    []*UserRoom `json:"users"`
+	Messages []*Message  `json:"messages"`
 }
 
 type Teacher struct {
@@ -162,6 +186,14 @@ type UploadVideoInput struct {
 }
 
 type User struct {
+	ID        string `json:"id"`
+	Username  string `json:"username"`
+	FirstName string `json:"firstName"`
+	LastName  string `json:"lastName"`
+	Avatar    string `json:"avatar"`
+}
+
+type UserRoom struct {
 	ID        string `json:"id"`
 	Username  string `json:"username"`
 	FirstName string `json:"firstName"`
