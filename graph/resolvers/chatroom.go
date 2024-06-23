@@ -37,8 +37,8 @@ func (r *mutationResolver) CreateMessage(ctx context.Context, in models.MessageI
 
 	_, err := r.LearningClient.AddMessageToChatRoom(ctx, &learning.AddMessage{
 		RoomID:    in.RoomID,
-		Content:   in.RoomID,
-		UserID:    in.RoomID,
+		Content:   in.Message,
+		UserID:    in.OwnerID,
 		IsTeacher: in.IsTeacher,
 	})
 	if err != nil {

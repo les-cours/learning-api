@@ -152,22 +152,16 @@ func Comments(ds *learning.Comments) []*models.Comment {
 
 func Room(room *learning.Room) *models.Room {
 	return &models.Room{
-		ID:   room.Id,
-		Name: room.Name,
-		Teacher: &models.UserRoom{
-			ID:        room.Owner.Id,
-			Username:  room.Owner.Username,
-			FirstName: room.Owner.FirstName,
-			LastName:  room.Owner.LastName,
-			Avatar:    room.Owner.Avatar,
-		},
+		ID:       room.Id,
+		Name:     room.Name,
+		Teacher:  User(room.Owner),
 		Users:    Users(room.Users),
 		Messages: Messages(room.Messages),
 	}
 }
 
 func Messages(messages []*learning.Message) []*models.Message {
-	var grpcMessage = make([]*models.Message, len(messages))
+	var grpcMessage = make([]*models.Message, 0)
 	for _, message := range messages {
 		grpcMessage = append(grpcMessage, Message(message))
 	}
@@ -186,7 +180,7 @@ func Message(message *learning.Message) *models.Message {
 }
 
 func Users(users []*learning.User) []*models.UserRoom {
-	var grpcUsers = make([]*models.UserRoom, len(users))
+	var grpcUsers = make([]*models.UserRoom, 0)
 	for _, user := range users {
 		grpcUsers = append(grpcUsers, User(user))
 	}
