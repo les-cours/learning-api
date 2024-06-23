@@ -167,7 +167,6 @@ func Messages(messages []*learning.Message) []*models.Message {
 	}
 	return grpcMessage
 }
-
 func Message(message *learning.Message) *models.Message {
 	return &models.Message{
 		ID:        message.Id,
@@ -186,7 +185,6 @@ func Users(users []*learning.User) []*models.UserRoom {
 	}
 	return grpcUsers
 }
-
 func User(user *learning.User) *models.UserRoom {
 	return &models.UserRoom{
 		ID:        user.Id,
@@ -194,5 +192,20 @@ func User(user *learning.User) *models.UserRoom {
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Avatar:    user.Avatar,
+	}
+}
+
+func Subscriptions(subscriptions *learning.Subscriptions) []*models.Subscription {
+	var grpcSubs = make([]*models.Subscription, 0)
+	for _, subscription := range subscriptions.Subscriptions {
+		grpcSubs = append(grpcSubs, Subscription(subscription))
+	}
+	return grpcSubs
+}
+func Subscription(subscription *learning.Subscription) *models.Subscription {
+	return &models.Subscription{
+		ID:      subscription.Id,
+		MonthID: int(subscription.MonthId),
+		PaidAt:  int(subscription.PaidAt),
 	}
 }

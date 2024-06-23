@@ -1,5 +1,4 @@
 scalar Upload
-
 schema {
   query: Query
   mutation: Mutation
@@ -50,6 +49,9 @@ type Query {
 #    chat
     room(roomID: String!): Room!
 
+    mySubscription(classroomID: String!):CurrentSubscription!
+    getSubscriptions(classroomID: String!):[Subscription!]!
+    getSubscriptionsByStudentID(classroomID: String!,studentID: String!):[Subscription!]!
 }
 
 
@@ -104,3 +106,14 @@ input CreateReplyInput {
     isTeacher: Boolean!      # Whether the user is a teacher
 }
 
+type CurrentSubscription {
+    status : Boolean!
+    rest_days : Int!
+    subscription: Subscription
+}
+
+type Subscription {
+    id  : String!
+    month_id : Int!
+    paid_at  : Int!
+}

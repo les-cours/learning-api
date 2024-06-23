@@ -78,6 +78,12 @@ type CreateReplyInput struct {
 	IsTeacher  bool   `json:"isTeacher"`
 }
 
+type CurrentSubscription struct {
+	Status       bool          `json:"status"`
+	RestDays     int           `json:"rest_days"`
+	Subscription *Subscription `json:"subscription,omitempty"`
+}
+
 type Document struct {
 	DocumentID        string    `json:"documentID"`
 	DocumentType      string    `json:"documentType"`
@@ -147,6 +153,12 @@ type Room struct {
 	Teacher  *UserRoom   `json:"teacher"`
 	Users    []*UserRoom `json:"users"`
 	Messages []*Message  `json:"messages"`
+}
+
+type Subscription struct {
+	ID      string `json:"id"`
+	MonthID int    `json:"month_id"`
+	PaidAt  int    `json:"paid_at"`
 }
 
 type Teacher struct {

@@ -82,6 +82,12 @@ type ComplexityRoot struct {
 		User       func(childComplexity int) int
 	}
 
+	CurrentSubscription struct {
+		RestDays     func(childComplexity int) int
+		Status       func(childComplexity int) int
+		Subscription func(childComplexity int) int
+	}
+
 	Document struct {
 		ArabicDescription func(childComplexity int) int
 		ArabicTitle       func(childComplexity int) int
@@ -146,17 +152,20 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Chapters            func(childComplexity int, classRoomID string) int
-		ClassRoom           func(childComplexity int, classRoomID string) int
-		ClassRooms          func(childComplexity int, subjectID string) int
-		ClassRoomsTeacher   func(childComplexity int, teacherID string) int
-		Comments            func(childComplexity int, documentID string, replied bool) int
-		Document            func(childComplexity int, documentID string) int
-		Documents           func(childComplexity int, lessonID string) int
-		Lessons             func(childComplexity int, chapterID string) int
-		MyClassRooms        func(childComplexity int, subjectID string) int
-		MyClassRoomsTeacher func(childComplexity int) int
-		Room                func(childComplexity int, roomID string) int
+		Chapters                    func(childComplexity int, classRoomID string) int
+		ClassRoom                   func(childComplexity int, classRoomID string) int
+		ClassRooms                  func(childComplexity int, subjectID string) int
+		ClassRoomsTeacher           func(childComplexity int, teacherID string) int
+		Comments                    func(childComplexity int, documentID string, replied bool) int
+		Document                    func(childComplexity int, documentID string) int
+		Documents                   func(childComplexity int, lessonID string) int
+		GetSubscriptions            func(childComplexity int, classroomID string) int
+		GetSubscriptionsByStudentID func(childComplexity int, classroomID string, studentID string) int
+		Lessons                     func(childComplexity int, chapterID string) int
+		MyClassRooms                func(childComplexity int, subjectID string) int
+		MyClassRoomsTeacher         func(childComplexity int) int
+		MySubscription              func(childComplexity int, classroomID string) int
+		Room                        func(childComplexity int, roomID string) int
 	}
 
 	Room struct {
@@ -165,6 +174,12 @@ type ComplexityRoot struct {
 		Name     func(childComplexity int) int
 		Teacher  func(childComplexity int) int
 		Users    func(childComplexity int) int
+	}
+
+	Subscription struct {
+		ID      func(childComplexity int) int
+		MonthID func(childComplexity int) int
+		PaidAt  func(childComplexity int) int
 	}
 
 	Teacher struct {
@@ -218,6 +233,9 @@ type QueryResolver interface {
 	Comments(ctx context.Context, documentID string, replied bool) ([]*models.Comment, error)
 	MyClassRooms(ctx context.Context, subjectID string) ([]*models.ClassRoom, error)
 	Room(ctx context.Context, roomID string) (*models.Room, error)
+	MySubscription(ctx context.Context, classroomID string) (*models.CurrentSubscription, error)
+	GetSubscriptions(ctx context.Context, classroomID string) ([]*models.Subscription, error)
+	GetSubscriptionsByStudentID(ctx context.Context, classroomID string, studentID string) ([]*models.Subscription, error)
 }
 
 type executableSchema struct {
@@ -420,6 +438,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Comment.User(childComplexity), true
+
+	case "CurrentSubscription.rest_days":
+		if e.complexity.CurrentSubscription.RestDays == nil {
+			break
+		}
+
+		return e.complexity.CurrentSubscription.RestDays(childComplexity), true
+
+	case "CurrentSubscription.status":
+		if e.complexity.CurrentSubscription.Status == nil {
+			break
+		}
+
+		return e.complexity.CurrentSubscription.Status(childComplexity), true
+
+	case "CurrentSubscription.subscription":
+		if e.complexity.CurrentSubscription.Subscription == nil {
+			break
+		}
+
+		return e.complexity.CurrentSubscription.Subscription(childComplexity), true
 
 	case "Document.arabicDescription":
 		if e.complexity.Document.ArabicDescription == nil {
@@ -869,6 +908,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Documents(childComplexity, args["lessonID"].(string)), true
 
+	case "Query.getSubscriptions":
+		if e.complexity.Query.GetSubscriptions == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getSubscriptions_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetSubscriptions(childComplexity, args["classroomID"].(string)), true
+
+	case "Query.getSubscriptionsByStudentID":
+		if e.complexity.Query.GetSubscriptionsByStudentID == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getSubscriptionsByStudentID_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetSubscriptionsByStudentID(childComplexity, args["classroomID"].(string), args["studentID"].(string)), true
+
 	case "Query.lessons":
 		if e.complexity.Query.Lessons == nil {
 			break
@@ -899,6 +962,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.MyClassRoomsTeacher(childComplexity), true
+
+	case "Query.mySubscription":
+		if e.complexity.Query.MySubscription == nil {
+			break
+		}
+
+		args, err := ec.field_Query_mySubscription_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.MySubscription(childComplexity, args["classroomID"].(string)), true
 
 	case "Query.room":
 		if e.complexity.Query.Room == nil {
@@ -946,6 +1021,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Room.Users(childComplexity), true
+
+	case "Subscription.id":
+		if e.complexity.Subscription.ID == nil {
+			break
+		}
+
+		return e.complexity.Subscription.ID(childComplexity), true
+
+	case "Subscription.month_id":
+		if e.complexity.Subscription.MonthID == nil {
+			break
+		}
+
+		return e.complexity.Subscription.MonthID(childComplexity), true
+
+	case "Subscription.paid_at":
+		if e.complexity.Subscription.PaidAt == nil {
+			break
+		}
+
+		return e.complexity.Subscription.PaidAt(childComplexity), true
 
 	case "Teacher.firstname":
 		if e.complexity.Teacher.Firstname == nil {
@@ -1514,6 +1610,45 @@ func (ec *executionContext) field_Query_documents_args(ctx context.Context, rawA
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_getSubscriptionsByStudentID_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["classroomID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("classroomID"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["classroomID"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["studentID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("studentID"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["studentID"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getSubscriptions_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["classroomID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("classroomID"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["classroomID"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_lessons_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1541,6 +1676,21 @@ func (ec *executionContext) field_Query_myClassRooms_args(ctx context.Context, r
 		}
 	}
 	args["subjectID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_mySubscription_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["classroomID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("classroomID"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["classroomID"] = arg0
 	return args, nil
 }
 
@@ -2786,6 +2936,143 @@ func (ec *executionContext) fieldContext_Comment_isTeacher(ctx context.Context, 
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CurrentSubscription_status(ctx context.Context, field graphql.CollectedField, obj *models.CurrentSubscription) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CurrentSubscription_status(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Status, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CurrentSubscription_status(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CurrentSubscription",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CurrentSubscription_rest_days(ctx context.Context, field graphql.CollectedField, obj *models.CurrentSubscription) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CurrentSubscription_rest_days(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.RestDays, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CurrentSubscription_rest_days(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CurrentSubscription",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _CurrentSubscription_subscription(ctx context.Context, field graphql.CollectedField, obj *models.CurrentSubscription) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_CurrentSubscription_subscription(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Subscription, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.Subscription)
+	fc.Result = res
+	return ec.marshalOSubscription2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐSubscription(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_CurrentSubscription_subscription(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "CurrentSubscription",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Subscription_id(ctx, field)
+			case "month_id":
+				return ec.fieldContext_Subscription_month_id(ctx, field)
+			case "paid_at":
+				return ec.fieldContext_Subscription_paid_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Subscription", field.Name)
 		},
 	}
 	return fc, nil
@@ -5775,6 +6062,195 @@ func (ec *executionContext) fieldContext_Query_room(ctx context.Context, field g
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_mySubscription(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_mySubscription(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().MySubscription(rctx, fc.Args["classroomID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*models.CurrentSubscription)
+	fc.Result = res
+	return ec.marshalNCurrentSubscription2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐCurrentSubscription(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_mySubscription(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "status":
+				return ec.fieldContext_CurrentSubscription_status(ctx, field)
+			case "rest_days":
+				return ec.fieldContext_CurrentSubscription_rest_days(ctx, field)
+			case "subscription":
+				return ec.fieldContext_CurrentSubscription_subscription(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type CurrentSubscription", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_mySubscription_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getSubscriptions(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getSubscriptions(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetSubscriptions(rctx, fc.Args["classroomID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Subscription)
+	fc.Result = res
+	return ec.marshalNSubscription2ᚕᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐSubscriptionᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getSubscriptions(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Subscription_id(ctx, field)
+			case "month_id":
+				return ec.fieldContext_Subscription_month_id(ctx, field)
+			case "paid_at":
+				return ec.fieldContext_Subscription_paid_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Subscription", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getSubscriptions_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Query_getSubscriptionsByStudentID(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getSubscriptionsByStudentID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetSubscriptionsByStudentID(rctx, fc.Args["classroomID"].(string), fc.Args["studentID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*models.Subscription)
+	fc.Result = res
+	return ec.marshalNSubscription2ᚕᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐSubscriptionᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getSubscriptionsByStudentID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Subscription_id(ctx, field)
+			case "month_id":
+				return ec.fieldContext_Subscription_month_id(ctx, field)
+			case "paid_at":
+				return ec.fieldContext_Subscription_paid_at(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Subscription", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getSubscriptionsByStudentID_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return fc, err
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query___type(ctx, field)
 	if err != nil {
@@ -6157,6 +6633,138 @@ func (ec *executionContext) fieldContext_Room_messages(ctx context.Context, fiel
 				return ec.fieldContext_Message_owner(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Message", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Subscription_id(ctx context.Context, field graphql.CollectedField, obj *models.Subscription) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Subscription_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Subscription_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Subscription_month_id(ctx context.Context, field graphql.CollectedField, obj *models.Subscription) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Subscription_month_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MonthID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Subscription_month_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Subscription_paid_at(ctx context.Context, field graphql.CollectedField, obj *models.Subscription) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Subscription_paid_at(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PaidAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Subscription_paid_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -9282,6 +9890,52 @@ func (ec *executionContext) _Comment(ctx context.Context, sel ast.SelectionSet, 
 	return out
 }
 
+var currentSubscriptionImplementors = []string{"CurrentSubscription"}
+
+func (ec *executionContext) _CurrentSubscription(ctx context.Context, sel ast.SelectionSet, obj *models.CurrentSubscription) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, currentSubscriptionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("CurrentSubscription")
+		case "status":
+			out.Values[i] = ec._CurrentSubscription_status(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "rest_days":
+			out.Values[i] = ec._CurrentSubscription_rest_days(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "subscription":
+			out.Values[i] = ec._CurrentSubscription_subscription(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 var documentImplementors = []string{"Document"}
 
 func (ec *executionContext) _Document(ctx context.Context, sel ast.SelectionSet, obj *models.Document) graphql.Marshaler {
@@ -10021,6 +10675,72 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			}
 
 			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "mySubscription":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_mySubscription(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getSubscriptions":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getSubscriptions(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
+		case "getSubscriptionsByStudentID":
+			field := field
+
+			innerFunc := func(ctx context.Context, fs *graphql.FieldSet) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getSubscriptionsByStudentID(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&fs.Invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx,
+					func(ctx context.Context) graphql.Marshaler { return innerFunc(ctx, out) })
+			}
+
+			out.Concurrently(i, func(ctx context.Context) graphql.Marshaler { return rrm(innerCtx) })
 		case "__type":
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Query___type(ctx, field)
@@ -10085,6 +10805,55 @@ func (ec *executionContext) _Room(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "messages":
 			out.Values[i] = ec._Room_messages(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var subscriptionImplementors = []string{"Subscription"}
+
+func (ec *executionContext) _Subscription(ctx context.Context, sel ast.SelectionSet, obj *models.Subscription) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, subscriptionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Subscription")
+		case "id":
+			out.Values[i] = ec._Subscription_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "month_id":
+			out.Values[i] = ec._Subscription_month_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "paid_at":
+			out.Values[i] = ec._Subscription_paid_at(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -10814,6 +11583,20 @@ func (ec *executionContext) unmarshalNCreateReplyInput2githubᚗcomᚋlesᚑcour
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNCurrentSubscription2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐCurrentSubscription(ctx context.Context, sel ast.SelectionSet, v models.CurrentSubscription) graphql.Marshaler {
+	return ec._CurrentSubscription(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNCurrentSubscription2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐCurrentSubscription(ctx context.Context, sel ast.SelectionSet, v *models.CurrentSubscription) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._CurrentSubscription(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNDocument2githubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐDocument(ctx context.Context, sel ast.SelectionSet, v models.Document) graphql.Marshaler {
 	return ec._Document(ctx, sel, &v)
 }
@@ -11104,6 +11887,60 @@ func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.S
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNSubscription2ᚕᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐSubscriptionᚄ(ctx context.Context, sel ast.SelectionSet, v []*models.Subscription) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNSubscription2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐSubscription(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNSubscription2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐSubscription(ctx context.Context, sel ast.SelectionSet, v *models.Subscription) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Subscription(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalNTeacher2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐTeacher(ctx context.Context, sel ast.SelectionSet, v *models.Teacher) graphql.Marshaler {
@@ -11515,6 +12352,13 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	}
 	res := graphql.MarshalString(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOSubscription2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐSubscription(ctx context.Context, sel ast.SelectionSet, v *models.Subscription) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Subscription(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {
