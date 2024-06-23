@@ -4,6 +4,7 @@ type UserRoom {
     firstName: String!
     lastName: String!
     avatar: String!
+    paid: Boolean!
 }
 
 type Message {

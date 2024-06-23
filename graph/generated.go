@@ -201,6 +201,7 @@ type ComplexityRoot struct {
 		FirstName func(childComplexity int) int
 		ID        func(childComplexity int) int
 		LastName  func(childComplexity int) int
+		Paid      func(childComplexity int) int
 		Username  func(childComplexity int) int
 	}
 }
@@ -1126,6 +1127,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.UserRoom.LastName(childComplexity), true
+
+	case "UserRoom.paid":
+		if e.complexity.UserRoom.Paid == nil {
+			break
+		}
+
+		return e.complexity.UserRoom.Paid(childComplexity), true
 
 	case "UserRoom.username":
 		if e.complexity.UserRoom.Username == nil {
@@ -4301,6 +4309,8 @@ func (ec *executionContext) fieldContext_Message_owner(ctx context.Context, fiel
 				return ec.fieldContext_UserRoom_lastName(ctx, field)
 			case "avatar":
 				return ec.fieldContext_UserRoom_avatar(ctx, field)
+			case "paid":
+				return ec.fieldContext_UserRoom_paid(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type UserRoom", field.Name)
 		},
@@ -6517,6 +6527,8 @@ func (ec *executionContext) fieldContext_Room_teacher(ctx context.Context, field
 				return ec.fieldContext_UserRoom_lastName(ctx, field)
 			case "avatar":
 				return ec.fieldContext_UserRoom_avatar(ctx, field)
+			case "paid":
+				return ec.fieldContext_UserRoom_paid(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type UserRoom", field.Name)
 		},
@@ -6573,6 +6585,8 @@ func (ec *executionContext) fieldContext_Room_users(ctx context.Context, field g
 				return ec.fieldContext_UserRoom_lastName(ctx, field)
 			case "avatar":
 				return ec.fieldContext_UserRoom_avatar(ctx, field)
+			case "paid":
+				return ec.fieldContext_UserRoom_paid(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type UserRoom", field.Name)
 		},
@@ -7337,6 +7351,50 @@ func (ec *executionContext) fieldContext_UserRoom_avatar(ctx context.Context, fi
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserRoom_paid(ctx context.Context, field graphql.CollectedField, obj *models.UserRoom) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserRoom_paid(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Paid, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserRoom_paid(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserRoom",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Boolean does not have child fields")
 		},
 	}
 	return fc, nil
@@ -11021,6 +11079,11 @@ func (ec *executionContext) _UserRoom(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "avatar":
 			out.Values[i] = ec._UserRoom_avatar(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "paid":
+			out.Values[i] = ec._UserRoom_paid(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}

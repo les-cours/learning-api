@@ -217,6 +217,7 @@ message User {
   string firstName = 4;
   string lastName = 5;
   string avatar = 6;
+  bool paid = 7;
 }
 
 message CreateCommentRequest {

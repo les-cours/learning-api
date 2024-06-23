@@ -192,6 +192,7 @@ func User(user *learning.User) *models.UserRoom {
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Avatar:    user.Avatar,
+		Paid:      user.Paid,
 	}
 }
 
