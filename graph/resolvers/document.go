@@ -29,13 +29,14 @@ func (r *queryResolver) Documents(ctx context.Context, lessonID string) ([]*mode
 
 func (r *queryResolver) Document(ctx context.Context, documentID string) (*models.DocumentLink, error) {
 
-	_, err := permisions.Student(ctx)
+	user, err := permisions.Student(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	res, err := r.LearningClient.GetDocument(ctx, &learning.IDRequest{
-		Id: documentID,
+		Id:     documentID,
+		UserID: user.ID,
 	})
 	if err != nil {
 		return nil, ErrApi(err)
