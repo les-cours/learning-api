@@ -9269,7 +9269,7 @@ func (ec *executionContext) unmarshalInputCreateLessonInput(ctx context.Context,
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"chapterID", "title", "arabicTitle", "description"}
+	fieldsInOrder := [...]string{"chapterID", "title", "order", "arabicTitle", "description"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -9290,6 +9290,13 @@ func (ec *executionContext) unmarshalInputCreateLessonInput(ctx context.Context,
 				return it, err
 			}
 			it.Title = data
+		case "order":
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("order"))
+			data, err := ec.unmarshalNInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Order = data
 		case "arabicTitle":
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("arabicTitle"))
 			data, err := ec.unmarshalNString2string(ctx, v)

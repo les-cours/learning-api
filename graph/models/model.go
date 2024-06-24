@@ -57,6 +57,7 @@ type CreateCommentInput struct {
 type CreateLessonInput struct {
 	ChapterID   string `json:"chapterID"`
 	Title       string `json:"title"`
+	Order       int    `json:"order"`
 	ArabicTitle string `json:"arabicTitle"`
 	Description string `json:"description"`
 }

@@ -103,6 +103,7 @@ input UpdateChapterInput {
 input CreateLessonInput {
     chapterID: String!
     title: String!
+    order: Int!
     arabicTitle:String!
     description: String!
 }

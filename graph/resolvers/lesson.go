@@ -26,6 +26,7 @@ func (r *mutationResolver) CreateLesson(ctx context.Context, in models.CreateLes
 		Title:       in.Title,
 		ArabicTitle: in.ArabicTitle,
 		Description: in.Description,
+		LessonOrder: int32(in.Order),
 	})
 
 	if err != nil {

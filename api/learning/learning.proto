@@ -98,6 +98,7 @@ message CreateLessonRequest{
   string arabicTitle= 2;
   string chapterID = 3;
   string description = 4;
+  int32 lessonOrder = 7;
 }
 
 message UpdateLessonRequest {
