@@ -56,6 +56,7 @@ type LearningServiceClient interface {
 	// GetSubscriptionInfo
 	GetCurrentSubscription(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*CurrentSubscription, error)
 	GetSubscriptions(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*Subscriptions, error)
+	GetMyChatRoom(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*ClassRooms, error)
 }
 
 type learningServiceClient struct {
@@ -336,6 +337,15 @@ func (c *learningServiceClient) GetSubscriptions(ctx context.Context, in *IDRequ
 	return out, nil
 }
 
+func (c *learningServiceClient) GetMyChatRoom(ctx context.Context, in *IDRequest, opts ...grpc.CallOption) (*ClassRooms, error) {
+	out := new(ClassRooms)
+	err := c.cc.Invoke(ctx, "/learning.LearningService/GetMyChatRoom", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // LearningServiceServer is the server API for LearningService service.
 // All implementations must embed UnimplementedLearningServiceServer
 // for forward compatibility
@@ -374,6 +384,7 @@ type LearningServiceServer interface {
 	// GetSubscriptionInfo
 	GetCurrentSubscription(context.Context, *IDRequest) (*CurrentSubscription, error)
 	GetSubscriptions(context.Context, *IDRequest) (*Subscriptions, error)
+	GetMyChatRoom(context.Context, *IDRequest) (*ClassRooms, error)
 	mustEmbedUnimplementedLearningServiceServer()
 }
 
@@ -470,6 +481,9 @@ func (UnimplementedLearningServiceServer) GetCurrentSubscription(context.Context
 }
 func (UnimplementedLearningServiceServer) GetSubscriptions(context.Context, *IDRequest) (*Subscriptions, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSubscriptions not implemented")
+}
+func (UnimplementedLearningServiceServer) GetMyChatRoom(context.Context, *IDRequest) (*ClassRooms, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetMyChatRoom not implemented")
 }
 func (UnimplementedLearningServiceServer) mustEmbedUnimplementedLearningServiceServer() {}
 
@@ -1024,6 +1038,24 @@ func _LearningService_GetSubscriptions_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _LearningService_GetMyChatRoom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(LearningServiceServer).GetMyChatRoom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/learning.LearningService/GetMyChatRoom",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(LearningServiceServer).GetMyChatRoom(ctx, req.(*IDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // LearningService_ServiceDesc is the grpc.ServiceDesc for LearningService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1150,6 +1182,10 @@ var LearningService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetSubscriptions",
 			Handler:    _LearningService_GetSubscriptions_Handler,
+		},
+		{
+			MethodName: "GetMyChatRoom",
+			Handler:    _LearningService_GetMyChatRoom_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

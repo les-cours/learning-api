@@ -333,4 +333,7 @@ service LearningService {
    */
   rpc GetCurrentSubscription(IDRequest) returns(CurrentSubscription){}
   rpc GetSubscriptions(IDRequest) returns(Subscriptions){}
+
+
+  rpc GetMyChatRoom(IDRequest)returns(ClassRooms){}
 }

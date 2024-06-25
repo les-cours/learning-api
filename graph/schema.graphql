@@ -52,6 +52,7 @@ type Query {
     mySubscription(classroomID: String!):CurrentSubscription!
     getSubscriptions(classroomID: String!):[Subscription!]!
     getSubscriptionsByStudentID(classroomID: String!,studentID: String!):[Subscription!]!
+
 }
 
 

@@ -129,12 +129,23 @@ func (r *queryResolver) MyClassRooms(ctx context.Context, subjectID string) ([]*
 		return nil, err
 	}
 
-	res, err := r.LearningClient.GetMyClassRooms(ctx, &learning.IDRequest{
-		Id:     subjectID,
-		UserID: student.ID,
-	})
-	if err != nil {
-		return nil, ErrApi(err)
+	var res = new(learning.ClassRooms)
+	if subjectID == "" {
+		res, err = r.LearningClient.GetMyChatRoom(ctx, &learning.IDRequest{
+			Id:     student.ID,
+			UserID: student.ID,
+		})
+		if err != nil {
+			return nil, ErrApi(err)
+		}
+	} else {
+		res, err = r.LearningClient.GetMyClassRooms(ctx, &learning.IDRequest{
+			Id:     subjectID,
+			UserID: student.ID,
+		})
+		if err != nil {
+			return nil, ErrApi(err)
+		}
 	}
 
 	return gprcToGraph.ClassRooms(res), nil

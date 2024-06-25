@@ -3029,7 +3029,7 @@ var file_api_learning_learning_proto_rawDesc = []byte{
 	0x73, 0x75, 0x62, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01, 0x20,
 	0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x6c, 0x65, 0x61, 0x72, 0x6e, 0x69, 0x6e, 0x67, 0x2e, 0x53,
 	0x75, 0x62, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0d, 0x73, 0x75, 0x62,
-	0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x32, 0x97, 0x10, 0x0a, 0x0f, 0x4c,
+	0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x32, 0xd5, 0x10, 0x0a, 0x0f, 0x4c,
 	0x65, 0x61, 0x72, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x52,
 	0x0a, 0x10, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x6f, 0x6f,
 	0x6d, 0x73, 0x12, 0x21, 0x2e, 0x6c, 0x65, 0x61, 0x72, 0x6e, 0x69, 0x6e, 0x67, 0x2e, 0x43, 0x72,
@@ -3159,10 +3159,14 @@ var file_api_learning_learning_proto_rawDesc = []byte{
 	0x69, 0x6f, 0x6e, 0x73, 0x12, 0x13, 0x2e, 0x6c, 0x65, 0x61, 0x72, 0x6e, 0x69, 0x6e, 0x67, 0x2e,
 	0x49, 0x44, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x17, 0x2e, 0x6c, 0x65, 0x61, 0x72,
 	0x6e, 0x69, 0x6e, 0x67, 0x2e, 0x53, 0x75, 0x62, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x69, 0x6f,
-	0x6e, 0x73, 0x22, 0x00, 0x42, 0x30, 0x5a, 0x2e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63,
-	0x6f, 0x6d, 0x2f, 0x6c, 0x65, 0x73, 0x2d, 0x63, 0x6f, 0x75, 0x72, 0x73, 0x2f, 0x6c, 0x65, 0x61,
-	0x72, 0x6e, 0x69, 0x6e, 0x67, 0x2d, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6c, 0x65,
-	0x61, 0x72, 0x6e, 0x69, 0x6e, 0x67, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6e, 0x73, 0x22, 0x00, 0x12, 0x3c, 0x0a, 0x0d, 0x47, 0x65, 0x74, 0x4d, 0x79, 0x43, 0x68, 0x61,
+	0x74, 0x52, 0x6f, 0x6f, 0x6d, 0x12, 0x13, 0x2e, 0x6c, 0x65, 0x61, 0x72, 0x6e, 0x69, 0x6e, 0x67,
+	0x2e, 0x49, 0x44, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x6c, 0x65, 0x61,
+	0x72, 0x6e, 0x69, 0x6e, 0x67, 0x2e, 0x43, 0x6c, 0x61, 0x73, 0x73, 0x52, 0x6f, 0x6f, 0x6d, 0x73,
+	0x22, 0x00, 0x42, 0x30, 0x5a, 0x2e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d,
+	0x2f, 0x6c, 0x65, 0x73, 0x2d, 0x63, 0x6f, 0x75, 0x72, 0x73, 0x2f, 0x6c, 0x65, 0x61, 0x72, 0x6e,
+	0x69, 0x6e, 0x67, 0x2d, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6c, 0x65, 0x61, 0x72,
+	0x6e, 0x69, 0x6e, 0x67, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -3266,38 +3270,40 @@ var file_api_learning_learning_proto_depIdxs = []int32{
 	1,  // 45: learning.LearningService.AddStudentToChatRoom:input_type -> learning.IDRequest
 	1,  // 46: learning.LearningService.GetCurrentSubscription:input_type -> learning.IDRequest
 	1,  // 47: learning.LearningService.GetSubscriptions:input_type -> learning.IDRequest
-	0,  // 48: learning.LearningService.CreateClassRooms:output_type -> learning.OperationStatus
-	6,  // 49: learning.LearningService.CreateClassRoom:output_type -> learning.ClassRoom
-	6,  // 50: learning.LearningService.UpdateClassRoom:output_type -> learning.ClassRoom
-	9,  // 51: learning.LearningService.GetClassRooms:output_type -> learning.ClassRooms
-	9,  // 52: learning.LearningService.GetClassRoomsByTeacher:output_type -> learning.ClassRooms
-	9,  // 53: learning.LearningService.GetMyClassRooms:output_type -> learning.ClassRooms
-	6,  // 54: learning.LearningService.GetClassRoom:output_type -> learning.ClassRoom
-	0,  // 55: learning.LearningService.DeleteClassRoom:output_type -> learning.OperationStatus
-	0,  // 56: learning.LearningService.DeleteClassRoomsByTeacher:output_type -> learning.OperationStatus
-	17, // 57: learning.LearningService.CreateChapter:output_type -> learning.Chapter
-	16, // 58: learning.LearningService.GetChaptersByClassRoom:output_type -> learning.Chapters
-	17, // 59: learning.LearningService.UpdateChapter:output_type -> learning.Chapter
-	0,  // 60: learning.LearningService.DeleteChapter:output_type -> learning.OperationStatus
-	12, // 61: learning.LearningService.GetLessonsByChapter:output_type -> learning.Lessons
-	11, // 62: learning.LearningService.CreateLesson:output_type -> learning.Lesson
-	11, // 63: learning.LearningService.UpdateLesson:output_type -> learning.Lesson
-	0,  // 64: learning.LearningService.DeleteLesson:output_type -> learning.OperationStatus
-	26, // 65: learning.LearningService.GetDocuments:output_type -> learning.Documents
-	24, // 66: learning.LearningService.GetDocument:output_type -> learning.DocumentLink
-	0,  // 67: learning.LearningService.DeleteDocument:output_type -> learning.OperationStatus
-	23, // 68: learning.LearningService.CreateVideo:output_type -> learning.Document
-	23, // 69: learning.LearningService.CreatePdf:output_type -> learning.Document
-	0,  // 70: learning.LearningService.CreateComment:output_type -> learning.OperationStatus
-	30, // 71: learning.LearningService.GetComments:output_type -> learning.Comments
-	30, // 72: learning.LearningService.GetRepliedComments:output_type -> learning.Comments
-	31, // 73: learning.LearningService.GetChatRoom:output_type -> learning.Room
-	0,  // 74: learning.LearningService.AddMessageToChatRoom:output_type -> learning.OperationStatus
-	0,  // 75: learning.LearningService.AddStudentToChatRoom:output_type -> learning.OperationStatus
-	34, // 76: learning.LearningService.GetCurrentSubscription:output_type -> learning.CurrentSubscription
-	36, // 77: learning.LearningService.GetSubscriptions:output_type -> learning.Subscriptions
-	48, // [48:78] is the sub-list for method output_type
-	18, // [18:48] is the sub-list for method input_type
+	1,  // 48: learning.LearningService.GetMyChatRoom:input_type -> learning.IDRequest
+	0,  // 49: learning.LearningService.CreateClassRooms:output_type -> learning.OperationStatus
+	6,  // 50: learning.LearningService.CreateClassRoom:output_type -> learning.ClassRoom
+	6,  // 51: learning.LearningService.UpdateClassRoom:output_type -> learning.ClassRoom
+	9,  // 52: learning.LearningService.GetClassRooms:output_type -> learning.ClassRooms
+	9,  // 53: learning.LearningService.GetClassRoomsByTeacher:output_type -> learning.ClassRooms
+	9,  // 54: learning.LearningService.GetMyClassRooms:output_type -> learning.ClassRooms
+	6,  // 55: learning.LearningService.GetClassRoom:output_type -> learning.ClassRoom
+	0,  // 56: learning.LearningService.DeleteClassRoom:output_type -> learning.OperationStatus
+	0,  // 57: learning.LearningService.DeleteClassRoomsByTeacher:output_type -> learning.OperationStatus
+	17, // 58: learning.LearningService.CreateChapter:output_type -> learning.Chapter
+	16, // 59: learning.LearningService.GetChaptersByClassRoom:output_type -> learning.Chapters
+	17, // 60: learning.LearningService.UpdateChapter:output_type -> learning.Chapter
+	0,  // 61: learning.LearningService.DeleteChapter:output_type -> learning.OperationStatus
+	12, // 62: learning.LearningService.GetLessonsByChapter:output_type -> learning.Lessons
+	11, // 63: learning.LearningService.CreateLesson:output_type -> learning.Lesson
+	11, // 64: learning.LearningService.UpdateLesson:output_type -> learning.Lesson
+	0,  // 65: learning.LearningService.DeleteLesson:output_type -> learning.OperationStatus
+	26, // 66: learning.LearningService.GetDocuments:output_type -> learning.Documents
+	24, // 67: learning.LearningService.GetDocument:output_type -> learning.DocumentLink
+	0,  // 68: learning.LearningService.DeleteDocument:output_type -> learning.OperationStatus
+	23, // 69: learning.LearningService.CreateVideo:output_type -> learning.Document
+	23, // 70: learning.LearningService.CreatePdf:output_type -> learning.Document
+	0,  // 71: learning.LearningService.CreateComment:output_type -> learning.OperationStatus
+	30, // 72: learning.LearningService.GetComments:output_type -> learning.Comments
+	30, // 73: learning.LearningService.GetRepliedComments:output_type -> learning.Comments
+	31, // 74: learning.LearningService.GetChatRoom:output_type -> learning.Room
+	0,  // 75: learning.LearningService.AddMessageToChatRoom:output_type -> learning.OperationStatus
+	0,  // 76: learning.LearningService.AddStudentToChatRoom:output_type -> learning.OperationStatus
+	34, // 77: learning.LearningService.GetCurrentSubscription:output_type -> learning.CurrentSubscription
+	36, // 78: learning.LearningService.GetSubscriptions:output_type -> learning.Subscriptions
+	9,  // 79: learning.LearningService.GetMyChatRoom:output_type -> learning.ClassRooms
+	49, // [49:80] is the sub-list for method output_type
+	18, // [18:49] is the sub-list for method input_type
 	18, // [18:18] is the sub-list for extension type_name
 	18, // [18:18] is the sub-list for extension extendee
 	0,  // [0:18] is the sub-list for field type_name
