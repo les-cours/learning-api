@@ -12,6 +12,16 @@ func ClassRoom(classRoom *learning.ClassRoom) *models.ClassRoom {
 	if classRoom.Chapters == nil {
 		classRoom.Chapters = &learning.Chapters{}
 	}
+
+	st := &models.Statistic{}
+	if classRoom.Statistics != nil {
+		st.Videos = int(classRoom.Statistics.Videos)
+		st.Pdfs = int(classRoom.Statistics.Pdfs)
+		st.Students = int(classRoom.Statistics.Students)
+		st.Chapters = int(classRoom.Statistics.Chapters)
+		st.Lessons = int(classRoom.Statistics.Lessons)
+
+	}
 	return &models.ClassRoom{
 		ClassRoomID:       classRoom.ClassRoomID,
 		Title:             classRoom.Title,
@@ -28,7 +38,8 @@ func ClassRoom(classRoom *learning.ClassRoom) *models.ClassRoom {
 			Firstname: classRoom.Teacher.Firstname,
 			Lastname:  classRoom.Teacher.Lastname,
 		},
-		Chapters: Chapters(classRoom.Chapters),
+		Chapters:   Chapters(classRoom.Chapters),
+		Statistics: st,
 	}
 
 }

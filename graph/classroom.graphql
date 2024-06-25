@@ -11,7 +11,16 @@ type ClassRoom {
     arabicDescription: String!
     teacher: Teacher!
     chapters: [Chapter!]!
+    statistics: Statistic
 }
+type Statistic {
+    students: Int!
+    videos: Int!
+    pdfs: Int!
+    chapters: Int!
+    lessons: Int!
+}
+
 
 input UpdateClassRoomInput {
     classRoomID: String!

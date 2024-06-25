@@ -66,6 +66,7 @@ type ComplexityRoot struct {
 		Image             func(childComplexity int) int
 		Price             func(childComplexity int) int
 		Rating            func(childComplexity int) int
+		Statistics        func(childComplexity int) int
 		StudentCount      func(childComplexity int) int
 		Teacher           func(childComplexity int) int
 		Title             func(childComplexity int) int
@@ -174,6 +175,14 @@ type ComplexityRoot struct {
 		Name     func(childComplexity int) int
 		Teacher  func(childComplexity int) int
 		Users    func(childComplexity int) int
+	}
+
+	Statistic struct {
+		Chapters func(childComplexity int) int
+		Lessons  func(childComplexity int) int
+		Pdfs     func(childComplexity int) int
+		Students func(childComplexity int) int
+		Videos   func(childComplexity int) int
 	}
 
 	Subscription struct {
@@ -362,6 +371,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ClassRoom.Rating(childComplexity), true
+
+	case "ClassRoom.statistics":
+		if e.complexity.ClassRoom.Statistics == nil {
+			break
+		}
+
+		return e.complexity.ClassRoom.Statistics(childComplexity), true
 
 	case "ClassRoom.studentCount":
 		if e.complexity.ClassRoom.StudentCount == nil {
@@ -1022,6 +1038,41 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Room.Users(childComplexity), true
+
+	case "Statistic.chapters":
+		if e.complexity.Statistic.Chapters == nil {
+			break
+		}
+
+		return e.complexity.Statistic.Chapters(childComplexity), true
+
+	case "Statistic.lessons":
+		if e.complexity.Statistic.Lessons == nil {
+			break
+		}
+
+		return e.complexity.Statistic.Lessons(childComplexity), true
+
+	case "Statistic.pdfs":
+		if e.complexity.Statistic.Pdfs == nil {
+			break
+		}
+
+		return e.complexity.Statistic.Pdfs(childComplexity), true
+
+	case "Statistic.students":
+		if e.complexity.Statistic.Students == nil {
+			break
+		}
+
+		return e.complexity.Statistic.Students(childComplexity), true
+
+	case "Statistic.videos":
+		if e.complexity.Statistic.Videos == nil {
+			break
+		}
+
+		return e.complexity.Statistic.Videos(childComplexity), true
 
 	case "Subscription.id":
 		if e.complexity.Subscription.ID == nil {
@@ -2580,6 +2631,59 @@ func (ec *executionContext) fieldContext_ClassRoom_chapters(ctx context.Context,
 				return ec.fieldContext_Chapter_lessons(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Chapter", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _ClassRoom_statistics(ctx context.Context, field graphql.CollectedField, obj *models.ClassRoom) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_ClassRoom_statistics(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Statistics, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*models.Statistic)
+	fc.Result = res
+	return ec.marshalOStatistic2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐStatistic(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_ClassRoom_statistics(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ClassRoom",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "students":
+				return ec.fieldContext_Statistic_students(ctx, field)
+			case "videos":
+				return ec.fieldContext_Statistic_videos(ctx, field)
+			case "pdfs":
+				return ec.fieldContext_Statistic_pdfs(ctx, field)
+			case "chapters":
+				return ec.fieldContext_Statistic_chapters(ctx, field)
+			case "lessons":
+				return ec.fieldContext_Statistic_lessons(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Statistic", field.Name)
 		},
 	}
 	return fc, nil
@@ -4835,6 +4939,8 @@ func (ec *executionContext) fieldContext_Mutation_updateClassRoom(ctx context.Co
 				return ec.fieldContext_ClassRoom_teacher(ctx, field)
 			case "chapters":
 				return ec.fieldContext_ClassRoom_chapters(ctx, field)
+			case "statistics":
+				return ec.fieldContext_ClassRoom_statistics(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ClassRoom", field.Name)
 		},
@@ -5327,6 +5433,8 @@ func (ec *executionContext) fieldContext_Query_classRooms(ctx context.Context, f
 				return ec.fieldContext_ClassRoom_teacher(ctx, field)
 			case "chapters":
 				return ec.fieldContext_ClassRoom_chapters(ctx, field)
+			case "statistics":
+				return ec.fieldContext_ClassRoom_statistics(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ClassRoom", field.Name)
 		},
@@ -5408,6 +5516,8 @@ func (ec *executionContext) fieldContext_Query_classRoom(ctx context.Context, fi
 				return ec.fieldContext_ClassRoom_teacher(ctx, field)
 			case "chapters":
 				return ec.fieldContext_ClassRoom_chapters(ctx, field)
+			case "statistics":
+				return ec.fieldContext_ClassRoom_statistics(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ClassRoom", field.Name)
 		},
@@ -5489,6 +5599,8 @@ func (ec *executionContext) fieldContext_Query_classRoomsTeacher(ctx context.Con
 				return ec.fieldContext_ClassRoom_teacher(ctx, field)
 			case "chapters":
 				return ec.fieldContext_ClassRoom_chapters(ctx, field)
+			case "statistics":
+				return ec.fieldContext_ClassRoom_statistics(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ClassRoom", field.Name)
 		},
@@ -5570,6 +5682,8 @@ func (ec *executionContext) fieldContext_Query_MyClassRoomsTeacher(ctx context.C
 				return ec.fieldContext_ClassRoom_teacher(ctx, field)
 			case "chapters":
 				return ec.fieldContext_ClassRoom_chapters(ctx, field)
+			case "statistics":
+				return ec.fieldContext_ClassRoom_statistics(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ClassRoom", field.Name)
 		},
@@ -5987,6 +6101,8 @@ func (ec *executionContext) fieldContext_Query_myClassRooms(ctx context.Context,
 				return ec.fieldContext_ClassRoom_teacher(ctx, field)
 			case "chapters":
 				return ec.fieldContext_ClassRoom_chapters(ctx, field)
+			case "statistics":
+				return ec.fieldContext_ClassRoom_statistics(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type ClassRoom", field.Name)
 		},
@@ -6647,6 +6763,226 @@ func (ec *executionContext) fieldContext_Room_messages(ctx context.Context, fiel
 				return ec.fieldContext_Message_owner(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Message", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Statistic_students(ctx context.Context, field graphql.CollectedField, obj *models.Statistic) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Statistic_students(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Students, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Statistic_students(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Statistic",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Statistic_videos(ctx context.Context, field graphql.CollectedField, obj *models.Statistic) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Statistic_videos(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Videos, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Statistic_videos(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Statistic",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Statistic_pdfs(ctx context.Context, field graphql.CollectedField, obj *models.Statistic) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Statistic_pdfs(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Pdfs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Statistic_pdfs(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Statistic",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Statistic_chapters(ctx context.Context, field graphql.CollectedField, obj *models.Statistic) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Statistic_chapters(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Chapters, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Statistic_chapters(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Statistic",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Statistic_lessons(ctx context.Context, field graphql.CollectedField, obj *models.Statistic) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Statistic_lessons(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Lessons, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Statistic_lessons(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Statistic",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Int does not have child fields")
 		},
 	}
 	return fc, nil
@@ -9858,6 +10194,8 @@ func (ec *executionContext) _ClassRoom(ctx context.Context, sel ast.SelectionSet
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
+		case "statistics":
+			out.Values[i] = ec._ClassRoom_statistics(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10870,6 +11208,65 @@ func (ec *executionContext) _Room(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "messages":
 			out.Values[i] = ec._Room_messages(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
+var statisticImplementors = []string{"Statistic"}
+
+func (ec *executionContext) _Statistic(ctx context.Context, sel ast.SelectionSet, obj *models.Statistic) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, statisticImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Statistic")
+		case "students":
+			out.Values[i] = ec._Statistic_students(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "videos":
+			out.Values[i] = ec._Statistic_videos(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "pdfs":
+			out.Values[i] = ec._Statistic_pdfs(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "chapters":
+			out.Values[i] = ec._Statistic_chapters(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		case "lessons":
+			out.Values[i] = ec._Statistic_lessons(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				out.Invalids++
 			}
@@ -12406,6 +12803,13 @@ func (ec *executionContext) marshalOOperationStatus2ᚖgithubᚗcomᚋlesᚑcour
 		return graphql.Null
 	}
 	return ec._OperationStatus(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOStatistic2ᚖgithubᚗcomᚋlesᚑcoursᚋlearningᚑapiᚋgraphᚋmodelsᚐStatistic(ctx context.Context, sel ast.SelectionSet, v *models.Statistic) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Statistic(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {

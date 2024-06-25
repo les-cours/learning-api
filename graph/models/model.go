@@ -28,6 +28,7 @@ type ClassRoom struct {
 	ArabicDescription string     `json:"arabicDescription"`
 	Teacher           *Teacher   `json:"teacher"`
 	Chapters          []*Chapter `json:"chapters"`
+	Statistics        *Statistic `json:"statistics,omitempty"`
 }
 
 type Comment struct {
@@ -154,6 +155,14 @@ type Room struct {
 	Teacher  *UserRoom   `json:"teacher"`
 	Users    []*UserRoom `json:"users"`
 	Messages []*Message  `json:"messages"`
+}
+
+type Statistic struct {
+	Students int `json:"students"`
+	Videos   int `json:"videos"`
+	Pdfs     int `json:"pdfs"`
+	Chapters int `json:"chapters"`
+	Lessons  int `json:"lessons"`
 }
 
 type Subscription struct {
