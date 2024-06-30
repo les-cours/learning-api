@@ -19,4 +19,6 @@ type UserToken struct {
 	Update    Permissions `json:"update"`
 	Read      Permissions `json:"read"`
 	Delete    Permissions `json:"delete"`
+	Sex       string      `json:"sex"`
+	GradID    string      `json:"gradID"`
 }
